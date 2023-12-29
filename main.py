@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # ABOUT INFO# ==========================================================================================================
 # Title..........: Super DuckHunt v1.0 Python IRC Bot (BETA)
 # File...........: main.py
@@ -536,6 +535,11 @@ def spawnduck(d_id, type):
 # Modified.......:
 # ======================================================================================================================
 def topduck():
+    # No players?
+    if func.cnfread('duckhunt.cnf', 'ducks', 'cache') == '0':
+        if isconnect == True:
+            irc.send(b'PRIVMSG ' + duckchan + b' :There are currently no top ducks.\r\n')
+            return 1
     # Gather score information
     parser = RawConfigParser()
     parser.read('duckhunt.cnf')
@@ -1813,6 +1817,8 @@ while 1:
                             continue
                         # new users with no stats, assigns stats
                         if func.cnfexists('duckhunt.cnf', 'ducks', str(username)) == False:
+                            if func.cnfread('duckhunt.cnf', 'ducks', 'cache') == '0':
+                                func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '1')
                             dinfo = '7?3?7?3,0,0,0,1,200,0,0,75?80?80,0,0,12?12,0'
                             func.cnfwrite('duckhunt.cnf', 'ducks', str(username), str(dinfo))
                         # shooting data
