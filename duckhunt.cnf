@@ -1,0 +1,67 @@
+[duckhunt]
+server = 
+port = 6667
+botname = DuckHunt
+botpass = 
+duckchan = #DuckHunt
+botmaster = 
+admin = '0'
+ignore = 0
+maxducks = 5
+spawntime = 450
+flytime = 390
+duckexp = 15
+duckfear = 50
+duckgold = 40
+friendrate = 50
+gunricochet = 10
+floodcheck = 24,25
+
+[flood_protection]
+!bang = True
+!duckstats = True
+!shop = True
+!bef = True
+!reload = True
+!bomb = True
+!tshot = True
+!mshot = True
+!help = True
+!wshot = True
+!dshot = True
+!about = True
+
+[top_shot]
+daily = 0
+weekly = 0
+monthly = 0
+totalshot = 0
+t_day = 1
+t_week = 1
+t_month = 1
+
+[bedazzled]
+
+[soggy]
+
+[sabotage]
+
+[gun_grease]
+
+[trigger_lock]
+
+[sunglasses]
+
+[silencer]
+
+[lucky_charm]
+
+[accident_insurance]
+
+[rain_coat]
+
+[duck_bomb]
+
+[duck_jam]
+
+[ducks]
