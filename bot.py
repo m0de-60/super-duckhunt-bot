@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # ABOUT INFO# ==========================================================================================================
 # Title..........: Super DuckHunt v1.0 Python IRC Bot (BETA)
 # File...........: bot.py (bot script dependant functions)
