@@ -2004,8 +2004,7 @@ while 1:
                             continue
                         # new users with no stats, assigns stats
                         if not func.cnfexists('duckhunt.cnf', 'ducks', str(username)):
-                            if func.cnfread('duckhunt.cnf', 'ducks', 'cache') == '0':
-                                func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '1')
+                            func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '1')
                             dinfo = '7?3?7?3,0,0,0,1,200,0,0,75?80?80,0,0,12?12,0'
                             func.cnfwrite('duckhunt.cnf', 'ducks', str(username), str(dinfo))
                         # shooting data
