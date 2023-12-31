@@ -2710,7 +2710,7 @@ while 1:
                         # no duck in the area
                         if duck_exists() == False:
                             irc.send(
-                                b'PRIVMSG ' + duckchan + b' :' + username + b' > Tosses a bread of bread at nothing? There are no ducks in the area. \x033[BREAD BOX: ' + bytes(
+                                b'PRIVMSG ' + duckchan + b' :' + username + b' > Tosses a piece of bread at nothing? There are no ducks in the area. \x033[BREAD BOX: ' + bytes(
                                     str(bread), 'utf-8') + b'/' + bytes(str(mbread), 'utf-8') + b']\x03\r\n')
                             continue
                         # duck exists
