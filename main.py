@@ -16,16 +16,19 @@
 
 # BETA NOTES # =========================================================================================================
 # THANKS TO: bildramer, Friithian, ComputerTech, End3r, TheFatherMind, foxy, Mrinfinity, wez, esjay, vurtual_
-# Doing my best to port the Autoit version (my original Super DuckHunt script) into Python. There may be some
-# differences.
 # \x02bold test\x02
 # \x034color test\x03
 # PRIVMSG #TestWookie :\x01ACTION action test\x01
-# .../|\ ^._.^ /|\... custom version(s) ??? ;)
+# .../|\ ^._.^ /|\... custom version(s) ??? ;) ╠(.Ọ.)╣
+# 0,1- --  ---  ----     -----------  14╠(7.14Ọ7.14)╣    0,1[* TIE FIGHTER DETECTED *]
 # 14,1-.,¸¸.-·°'`'°·-.,¸¸.-·°'`'°·0,1 /|\ ^4.0_4.0^ /|\
 # TO DO LIST POSSIBILITIES - UPCOMING VERSION 1.1+ UPDATE GOODIES # ====================================================
 # Add the laughing dog (optional feature, can be turned on/off)
 # Recode !bang
+# Usernames with brackets {} [] seem to cause !shop errors
+# Make Golden Ducks more spawnable
+# Make Lucky Charm give random 5 - 10 xp instead of double
+# Fix !shop bug ( if you use !shop sfsf it causes an error, need to add isnumeric() )
 # Add searching the bushes
 # Tweak reliability and gun jamming
 # Expand !bomb
@@ -37,6 +40,7 @@
 # IMPORT # =============================================================================================================
 from configparser import RawConfigParser
 from datetime import date
+# import datetime
 import threading
 import socket
 import time
@@ -263,6 +267,13 @@ def duck_timer():
         # this kills the timer on script exit or disconnect ====================================================================
         if exitvar is True or exitvar == 'Disconnect':
             break
+        # new year holiday function ====================================================================================
+        # c_day = func.gettok(str(date.today()), 2, '-')
+        # c_week = date.today().isocalendar()[1]
+        # c_month = func.gettok(str(date.today()), 1, '-')
+        # c_time = datetime.time
+        # print('DAY: ' + str(c_day) + ' WEEK: ' + str(c_week) + ' MONTH: ' + str(c_month) + ' TIME: ' + str(c_time))
+
         # duck spawn/flee timer handling =======================================================================================
         if not duckhunt:
             continue
@@ -580,6 +591,8 @@ def spawnduck(d_id, d_type):
 
 def topduck():
     # No players?
+    if func.cnfexists('duckhunt.cnf', 'ducks', 'cache') == False:
+        func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '0')
     if func.cnfread('duckhunt.cnf', 'ducks', 'cache') == '0':
         # if isconnect:
         irc.send(b'PRIVMSG ' + duckchan + b' :There are currently no top ducks.\r\n')
@@ -596,6 +609,9 @@ def topduck():
         dat = func.cnfread('duckhunt.cnf', 'ducks', datkey)
         print(dat)
         xp = func.gettok(dat, 3, ',') + '?' + str(datkey)
+        exp = func.gettok(dat, 3, ',')
+        if int(exp) == 0:
+            continue
         if datt != '':
             datt = datt + ',' + xp
             continue
@@ -1022,16 +1038,14 @@ while 1:
                             data5 = data[5].decode()
                             adminlist = func.cnfread('duckhunt.cnf', 'duckhunt', 'admin')
                             if adminlist == '0' or func.istok(adminlist, str(data5), ',') == False:
-                                irc.send(b'NOTICE ' + username + b' :Invalid request: User "' + bytes(str(data5),
-                                                                                                      'utf-8') + b'" does not exist in the admin list.\r\n')
+                                irc.send(b'NOTICE ' + username + b' :Invalid request: User "' + bytes(str(data5), 'utf-8') + b'" does not exist in the admin list.\r\n')
                                 continue
                             if func.numtok(adminlist, ',') == 1:
                                 adminlist = '0'
                             if func.numtok(adminlist, ',') > 1:
                                 adminlist = func.deltok(adminlist, str(data5), ',')
                             func.cnfwrite('duckhunt.cnf', 'duckhunt', 'admin', str(adminlist))
-                            irc.send(b'NOTICE ' + username + b' :User ' + bytes(str(data5),
-                                                                                'utf-8') + b' removed from the admin list.\r\n')
+                            irc.send(b'NOTICE ' + username + b' :User ' + bytes(str(data5), 'utf-8') + b' removed from the admin list.\r\n')
                             continue
                         # del botmaster <username>
                         if data[4].lower() == b'botmaster' and len(data) == 6 and func.istok(botmaster, str(dusername),
@@ -1044,8 +1058,7 @@ while 1:
                                 continue
                             botmaster = func.deltok(botmaster, str(data5), ',')
                             func.cnfwrite('duckhunt.cnf', 'duckhunt', 'botmaster', botmaster)
-                            irc.send(b'NOTICE ' + username + b' :User ' + bytes(str(data5),
-                                                                                'utf-8') + b' removed from the botmaster list.\r\n')
+                            irc.send(b'NOTICE ' + username + b' :User ' + bytes(str(data5), 'utf-8') + b' removed from the botmaster list.\r\n')
                             continue
                         # del ignore <username>
                         if data[4].lower() == b'ignore' and len(data) == 6:
@@ -1343,6 +1356,9 @@ while 1:
                             shopmenu(username)
                             continue
                         if len(data) >= 5:
+                            data4 = data[4].decode()
+                            if not data4.isnumeric():
+                                continue
                             itemid = int(data[4])
                             # data prep
                             ammo = bot.duckinfo(username, b'ammo')
@@ -1821,11 +1837,13 @@ while 1:
 # !bomb - duck bombing run (requires 50+ befriended ducks, once every 24 hours)
 # ======================================================================================================================
                     if data[3].lower() == b':!bomb' and len(data) == 5:
-                        friend = bot.duckinfo(username, b'friend')
+                        if func.cnfexists('duckhunt.cnf', 'ducks', str(username)) == False:
+                            irc.send(b'NOTICE ' + username + b' :You have not played yet.\r\n')
+                            continue
+                        friend = bot.duckinfo(str(username), b'friend')
                         # not enough duck friends/no player stats
-                        if int(friend) < 50 or func.cnfexists('duckhunt.cnf', 'ducks', str(username)) == False:
-                            irc.send(
-                                b'NOTICE ' + username + b' :You do not have enough duck friends to do this, you need at least 50 befriended ducks.\r\n')
+                        if int(friend) < 50:
+                            irc.send(b'NOTICE ' + username + b' :You do not have enough duck friends to do this, you need at least 50 befriended ducks.\r\n')
                             continue
                         # can't bomb the bot
                         if str(data[4]) == str(botname):
@@ -2045,10 +2063,8 @@ while 1:
                                 b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK PFFFFT*\x03     \x034Your gun was sabotaged.\x03\r\n')
                             continue
                         # trigger lock
-                        if func.cnfexists('duckhunt.cnf', 'trigger_lock',
-                                          str(username)) == True and duck_exists() == False:
-                            irc.send(
-                                b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK*\x03    \x034TRIGGER LOCKED\x03\r\n')
+                        if func.cnfexists('duckhunt.cnf', 'trigger_lock', str(username)) is True and duck_exists() is False:
+                            irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK*\x03    \x034TRIGGER LOCKED\x03\r\n')
                             continue
                         # empty magazine
                         if int(rounds) == 0:
@@ -2742,6 +2758,8 @@ while 1:
                                         xp = int(xp) + duckexp
                                         bot.duckinfo(username, b'xp', str(xp))
                                         duck[duckid] = 'None'
+                                        # confiscated guns returned silently after duck is befriended
+                                        confiscatedguns = ''
                                         irc.send(
                                             b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The duck ate the piece of bread!     \x02\\_O< QUAAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(
                                                 str(friend), 'utf-8') + b'] [+' + bytes(str(duckexp),
@@ -2759,6 +2777,8 @@ while 1:
                                         xp = int(xp) + exp
                                         bot.duckinfo(username, b'xp', str(xp))
                                         duck[duckid] = 'None'
+                                        # confiscated guns returned silently after duck is befriended
+                                        confiscatedguns = ''
                                         irc.send(
                                             b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The duck ate the piece of bread!     \x02\\_O< QUAAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(
                                                 str(friend), 'utf-8') + b'] [+' + bytes(str(exp),
@@ -2792,6 +2812,8 @@ while 1:
                                         xp = int(xp) + exp
                                         bot.duckinfo(username, b'xp', str(xp))
                                         duck[duckid] = 'None'
+                                        # confiscated guns returned silently after duck is befriended
+                                        confiscatedguns = ''
                                         irc.send(
                                             b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The GOLDEN DUCK ate the piece of bread!     \x02\\_0< QUAAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(
                                                 str(friend), 'utf-8') + b'] [+' + bytes(str(exp),
@@ -2810,6 +2832,8 @@ while 1:
                                         xp = int(xp) + exp
                                         bot.duckinfo(username, b'xp', str(xp))
                                         duck[duckid] = 'None'
+                                        # confiscated guns returned silently after duck is befriended
+                                        confiscatedguns = ''
                                         irc.send(
                                             b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The GOLDEN DUCK ate the piece of bread!     \x02\\_0< QUAAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(
                                                 str(friend), 'utf-8') + b'] [+' + bytes(str(exp),
