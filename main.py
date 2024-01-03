@@ -3,7 +3,10 @@
 # Title..........: Super DuckHunt v1.0 Python IRC Bot (BETA)
 # File...........: main.py
 # Python version.: v3.12.0 (does not work in older versions)
-# Script version.: v1.0
+# Script version.: v1.0.5 BETA
+# Remarks........: This is the most current version 1.0.5 the final v1.0 release
+#                : All bugs found please report, some bugs are already known.
+#                : Final change before beginning version 1.1
 # Language.......: English
 # Description....: IRC Bot Script based off original DuckHunt bot by Menz Agitat
 #                  Lots of changes and twists added to this, following suit as Menz Agitat bot was said to be a "port"
@@ -19,8 +22,7 @@
 # \x02bold test\x02
 # \x034color test\x03
 # PRIVMSG #TestWookie :\x01ACTION action test\x01
-# .../|\ ^._.^ /|\... custom version(s) ??? ;) ╠(.Ọ.)╣
-# 0,1- --  ---  ----     -----------  14╠(7.14Ọ7.14)╣    0,1[* TIE FIGHTER DETECTED *]
+# .../|\ ^._.^ /|\... custom version(s) ??? ;)
 # 14,1-.,¸¸.-·°'`'°·-.,¸¸.-·°'`'°·0,1 /|\ ^4.0_4.0^ /|\
 # TO DO LIST POSSIBILITIES - UPCOMING VERSION 1.1+ UPDATE GOODIES # ====================================================
 # Add the laughing dog (optional feature, can be turned on/off)
@@ -28,15 +30,15 @@
 # Usernames with brackets {} [] seem to cause !shop errors
 # Make Golden Ducks more spawnable
 # Make Lucky Charm give random 5 - 10 xp instead of double
-# Fix !shop bug ( if you use !shop sfsf it causes an error, need to add isnumeric() )
 # Add searching the bushes
 # Tweak reliability and gun jamming
-# Expand !bomb
+# Expand and fix !bomb
 # Expand !shop
 # Expand/add new timed items/effects
-# Add !swim and !shower (for !bomb)
+# Add !swim and !shower?? (for !bomb)
 # Add an accidental goose?
 # Expand botmaster/admin controls
+# New shop items, explosive ammo, eye drops
 # IMPORT # =============================================================================================================
 from configparser import RawConfigParser
 from datetime import date
@@ -74,7 +76,7 @@ flood_check = False
 if func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck') != '0':
     flood_check = True
 # GLOBAL VARIABLES # ===================================================================================================
-botversion = b'1.0'  # Current Bot Version hard code DO NOT CHANGE
+botversion = b'1.0.5'  # Current Bot Version hard code DO NOT CHANGE
 userlist = {}  # For channel user monitoring
 userchan = 0  # For channel user monitoring
 duckexists = False  # does a duck exist? always leave this as false
@@ -267,17 +269,11 @@ def duck_timer():
         # this kills the timer on script exit or disconnect ====================================================================
         if exitvar is True or exitvar == 'Disconnect':
             break
-        # new year holiday function ====================================================================================
-        # c_day = func.gettok(str(date.today()), 2, '-')
-        # c_week = date.today().isocalendar()[1]
-        # c_month = func.gettok(str(date.today()), 1, '-')
-        # c_time = datetime.time
-        # print('DAY: ' + str(c_day) + ' WEEK: ' + str(c_week) + ' MONTH: ' + str(c_month) + ' TIME: ' + str(c_time))
 
         # duck spawn/flee timer handling =======================================================================================
         if not duckhunt:
             continue
-        time.sleep(0)  # fastest this way ¯\_(o.O)_/¯
+        time.sleep(10)  # fastest this way ¯\_(o.O)_/¯
         elapsed_time = time.time() - start_time
         # checks for duck openings and spawn/flee timers
         for jx in range(maxducks + 1):
@@ -369,7 +365,7 @@ def ircnamesrf(namesdata, ext=''):
     names = names.replace('+', '')
     names = names.replace("b'", '')
     names = names.replace("'", '')
-    names = names.replace(']', '')
+    # names = names.replace(']', '')
     names = names.replace(',', '')
     nd_key = 'cl' + str(userchan)
     userlist[nd_key] = names
@@ -467,16 +463,25 @@ def level_up(user):
 def namecheck(name):
     namech = name.replace("b'", '')
     namech = namech.replace("'", '')
-    print('userchan ' + str(userchan))
+    # print('userchan ' + str(userchan))
     nnx = 1
     while nnx <= userchan:
         nd_key = 'cl' + str(nnx)
         print('NAMES: ' + str(userlist[nd_key]))
-        if not func.istok(userlist[nd_key], namech, ' '):
-            nnx += 1
-            continue
         if func.istok(userlist[nd_key], namech, ' '):
             return True
+        if func.istok(userlist[nd_key], namech + ']', ' '):
+            return True
+
+        #if not func.istok(userlist[nd_key], namech, ' ') or not func.istok(userlist[nd_key], str(namech) + ']', ' '):
+        #    nnx += 1
+        #    continue
+        # if func.istok(userlist[nd_key], namech, ' '):
+        #    return True
+        # bug fix for user name issues
+        # namech = namech.replace(']', '')
+        # if func.istok(userlist[nd_key], namech + ']', ' '):
+        #    return True
         nnx += 1
         continue
     return False
@@ -591,12 +596,12 @@ def spawnduck(d_id, d_type):
 
 def topduck():
     # No players?
-    if func.cnfexists('duckhunt.cnf', 'ducks', 'cache') == False:
-        func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '0')
     if func.cnfread('duckhunt.cnf', 'ducks', 'cache') == '0':
         # if isconnect:
         irc.send(b'PRIVMSG ' + duckchan + b' :There are currently no top ducks.\r\n')
         return 1
+    # if func.cnfexists('duckhunt.cnf', 'ducks', 'cache') == False:
+    #     func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '0')
     # Gather score information
     parser = RawConfigParser()
     parser.read('duckhunt.cnf')
@@ -1837,24 +1842,24 @@ while 1:
 # !bomb - duck bombing run (requires 50+ befriended ducks, once every 24 hours)
 # ======================================================================================================================
                     if data[3].lower() == b':!bomb' and len(data) == 5:
-                        if func.cnfexists('duckhunt.cnf', 'ducks', str(username)) == False:
+                        if func.cnfexists('duckhunt.cnf', 'ducks', str(username.lower())) == False:
                             irc.send(b'NOTICE ' + username + b' :You have not played yet.\r\n')
                             continue
-                        friend = bot.duckinfo(str(username), b'friend')
+                        friend = bot.duckinfo(str(username.lower()), b'friend')
+                        # can't bomb the bot
+                        if str(data[4].lower()) == str(botname.lower()):
+                            irc.send(b'NOTICE ' + username + b' :Nice try ;-)\r\n')
+                            continue
                         # not enough duck friends/no player stats
                         if int(friend) < 50:
                             irc.send(b'NOTICE ' + username + b' :You do not have enough duck friends to do this, you need at least 50 befriended ducks.\r\n')
                             continue
-                        # can't bomb the bot
-                        if str(data[4]) == str(botname):
-                            irc.send(b'NOTICE ' + username + b' :Nice try ;-)\r\n')
-                            continue
                         # user isn't on the channel
-                        if namecheck(str(data[4].decode())) == False:
+                        if not namecheck(str(data[4].decode())):
                             irc.send(b'NOTICE ' + username + b' :' + data[4] + b' is not in the channel.\r\n')
                             continue
                         # user hasn't played yet
-                        if func.cnfexists('duckhunt.cnf', 'ducks', str(data[4].lower())) == False:
+                        if not func.cnfexists('duckhunt.cnf', 'ducks', str(data[4].lower())):
                             irc.send(b'NOTICE ' + username + b' :' + data[4] + b" hasn't played yet.\r\n")
                             continue
                         # can't bomb yourself
@@ -1863,19 +1868,16 @@ while 1:
                             continue
                         bot.data_check(str(username), 'duck_bomb')
                         # check if user has done duck bombing in last 24 hours
-                        if func.cnfexists('duckhunt.cnf', 'duck_bomb', str(username)) == True:
+                        if func.cnfexists('duckhunt.cnf', 'duck_bomb', str(username)):
                             timeleft = bot.data_check(str(username), 'duck_bomb', 'get')
                             timemath = func.hour24() - (math.ceil(time.time()) - float(timeleft))
                             timeval = bot.timeconvertmsg(timemath)
-                            irc.send(
-                                b'NOTICE ' + username + b" :You've recently used a duck bombing within the last 24 hours. Try again in: " + bytes(
-                                    str(timeval), 'utf-8') + b'\r\n')
+                            irc.send(b'NOTICE ' + username + b" :You've recently used a duck bombing within the last 24 hours. Try again in: " + bytes(str(timeval), 'utf-8') + b'\r\n')
                             continue
                         bot.data_check(str(data[4].decode()), 'soggy')
                         # target is already soggy
                         if func.cnfexists('duckhunt.cnf', 'soggy', str(data[4])) == True:
-                            irc.send(b'NOTICE ' + username + b' :' + bytes(str(data[4].decode()),
-                                                                           'utf-8') + b' is already soggy.\r\n')
+                            irc.send(b'NOTICE ' + username + b' :' + bytes(str(data[4].decode()), 'utf-8') + b' is already soggy.\r\n')
                             continue
                         # user has not used duck bombing in the last 24 hours
                         func.cnfwrite('duckhunt.cnf', 'duck_bomb', str(username), str(time.time()))
