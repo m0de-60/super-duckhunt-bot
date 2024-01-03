@@ -1,16 +1,23 @@
 # Super-DuckHunt-Beta
-Super DuckHunt IRC bot (Python Version) 1.0
+
+# FINAL REVISION FOR v1.0 BETA
+# VERSION 1.1 BETA COMING SOON
+
+Super DuckHunt IRC bot 1.0.5 (Python Version 'PyDuck')
 By Neo_Nemesis
 
 HELP PAGE: https://neo-coder-usa.github.io/super-duckhunt-beta/
 
 This would be a sequel, or second installment of the original DuckHunt bot by Menz Agitat.
-There are a lot of differences in this new Super DuckHunt, ready below to understand how it works!
+There are a lot of differences in this new Super DuckHunt, read below to understand how it works,
+or visit the HELP PAGE linked above.
 
 -----------------------------------------------------------------------------------------------------
 SCRIPT INFO & CONFIGURATION
 -----------------------------------------------------------------------------------------------------
-Requires Python v3.12.0, main.py, bot.py, func.py, duckhunt.cnf
+Requires: Python v3.12.0
+
+Files: main.py, bot.py, func.py, duckhunt.cnf
 
 TO CONFIGURE:
 
