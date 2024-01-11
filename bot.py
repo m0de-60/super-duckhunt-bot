@@ -239,7 +239,7 @@ def iecheck(user):
         timem = time.time() - float(timem)
         if timem >= float(func.hour24()):
             func.cnfdelete('duckhunt.cnf', 'gun_grease', user)
-# trigger lock check ===================================================================================================
+# Gun Lock check ===================================================================================================
     if func.cnfexists('duckhunt.cnf', 'trigger_lock', user) == True:
         timem = func.cnfread('duckhunt.cnf', 'trigger_lock', user)
         timem = time.time() - float(timem)
@@ -311,9 +311,9 @@ def inveffect(user):
         huntingbag = 'Gun Grease'
     if func.cnfexists('duckhunt.cnf', 'trigger_lock', str(user)) == True:
         if huntingbag != '0':
-            huntingbag = huntingbag + ' | ' + 'Trigger Lock'
+            huntingbag = huntingbag + ' | ' + 'Gun Lock'
         if huntingbag == '0':
-            huntingbag = 'Trigger Lock'
+            huntingbag = 'Gun Lock'
     if func.cnfexists('duckhunt.cnf', 'silencer', str(user)) == True:
         if huntingbag != '0':
             huntingbag = huntingbag + ' | ' + 'Silencer'
@@ -440,7 +440,7 @@ def shopprice(user, itemid):
     # gun uprade
     if int(itemid) == 7:
         return 200
-    # trigger lock
+    # Gun Lock
     if int(itemid) == 8:
         return 15
     # silencer
