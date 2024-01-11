@@ -519,8 +519,8 @@ def shopmenu(user):
     shop6 = '6: Gun Cleaning (' + str(bot.shopprice(user, 6)) + ' xp)'
     # gun upgrade
     shop7 = '7: Gun Upgrade (' + str(bot.shopprice(user, 7)) + ' xp)'
-    # trigger lock
-    shop8 = '8: Trigger Lock (' + str(bot.shopprice(user, 8)) + ' xp)'
+    # Gun Lock
+    shop8 = '8: Gun Lock (' + str(bot.shopprice(user, 8)) + ' xp)'
     # silencer
     shop9 = '9: Silencer (' + str(bot.shopprice(user, 9)) + ' xp)'
     # lucky charm
@@ -1383,7 +1383,7 @@ while 1:
                             mbread = func.gettok(breadbox, 1, '?')
 # not enough xp to purchase ============================================================================================
                             if int(xp) < bot.shopprice(username, itemid):
-                                irc.send(b'NOTICE ' + username + b' :You do not have enough xp for this purchase.\r\n')
+                                irc.send(b'NOTICE ' + username + b' :You do not have enough xp for this.\r\n')
                                 continue
 # checks if user is on the channel, and prevents users from targeting themselves =======================================
                             if len(data) == 6:
@@ -1539,7 +1539,7 @@ while 1:
                                 irc.send(
                                     b'NOTICE ' + username + b' :You have upgraded your gun. Accuracy and reliability have increased.\r\n')
                                 continue
-# 8 - trigger lock =====================================================================================================
+# 8 - Gun Lock =====================================================================================================
                             if int(itemid) == 8:
                                 bot.data_check(username, 'trigger_lock')
                                 # already own this item
@@ -1548,18 +1548,16 @@ while 1:
                                     timeleft = bot.data_check(str(username), 'trigger_lock', 'get')
                                     timemath = func.hour24() - (math.ceil(time.time()) - float(timeleft))
                                     timeval = bot.timeconvertmsg(timemath)
-                                    irc.send(
-                                        b'NOTICE ' + username + b' :You already own Trigger Lock. [Time Remaining: ' + bytes(
-                                            str(timeval), 'utf-8') + b']\r\n')
+                                    irc.send(b'NOTICE ' + username + b' :You already own Gun Lock. [Time Remaining: ' + bytes(str(timeval), 'utf-8') + b']\r\n')
                                     continue
                                 # purchase
-                                xp = int(xp) - bot.shopprice(username, itemid)
+                                if int(itemid) == 8:
+                                    xp = int(xp) - bot.shopprice(username, itemid)
                                 bot.duckinfo(username, b'xp', str(xp))
                                 # adding time entry (24 hours)
                                 func.cnfwrite('duckhunt.cnf', 'trigger_lock', str(username), str(time.time()))
                                 # purchase confirmation
-                                irc.send(
-                                    b'NOTICE ' + username + b' :You purchased Trigger Lock. Gun will only fire when a duck is present, preventing some confiscations and accidents for 24 hours.\r\n')
+                                irc.send(b'NOTICE ' + username + b' :You purchased Gun Lock. Gun will only fire when a duck is present, preventing some confiscations and accidents for 24 hours.\r\n')
                                 continue
 # 9 - silencer =========================================================================================================
                             if int(itemid) == 9:
@@ -2064,9 +2062,9 @@ while 1:
                             irc.send(
                                 b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK PFFFFT*\x03     \x034Your gun was sabotaged.\x03\r\n')
                             continue
-                        # trigger lock
+                        # Gun Lock
                         if func.cnfexists('duckhunt.cnf', 'trigger_lock', str(username)) is True and duck_exists() is False:
-                            irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK*\x03    \x034TRIGGER LOCKED\x03\r\n')
+                            irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK*\x03    \x034GUN LOCKED\x03\r\n')
                             continue
                         # empty magazine
                         if int(rounds) == 0:
