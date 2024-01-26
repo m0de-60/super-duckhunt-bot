@@ -2,20 +2,29 @@
 server = 
 port = 6667
 botname = DuckHunt
-botpass = 
-duckchan = #DuckHunt
-botmaster = 
-admin = '0'
+botpass = 0
+duckchan = #duckhunt
+botmaster = Neo_Nemesis
+admin = 0
 ignore = 0
-maxducks = 5
-spawntime = 450
-flytime = 390
+maxducks = 6
+spawntime = 1000
+flytime = 800
 duckexp = 15
 duckfear = 50
 duckgold = 40
-friendrate = 50
-gunricochet = 10
+friendrate = 71
 floodcheck = 24,25
+maint = 24
+maint_time = 0
+
+[rules]
+gunricochet = 5
+thebushes = 15
+gunconf = on
+infammo = off
+bang = on
+bef = on
 
 [flood_protection]
 !bang = True
@@ -30,6 +39,18 @@ floodcheck = 24,25
 !wshot = True
 !dshot = True
 !about = True
+!commands = True
+!topduck = True
+!reloaf = True
+!bread = True
+!rules = True
+!swim = True
+\x01version\x01 = True
+\x01finger\x01 = True
+\x01ping = True
+version = True
+finger = True
+ping = True
 
 [top_shot]
 daily = 0
@@ -46,6 +67,8 @@ t_month = 1
 
 [sabotage]
 
+[expl_ammo]
+
 [gun_grease]
 
 [trigger_lock]
@@ -61,6 +84,12 @@ t_month = 1
 [rain_coat]
 
 [duck_bomb]
+
+[bread_lock]
+
+[popcorn]
+
+[bombed]
 
 [duck_jam]
 

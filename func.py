@@ -1,22 +1,24 @@
+#! /usr/bin/python3
 # ABOUT INFO# ==========================================================================================================
-# Title..........: Super DuckHunt v1.0 Python IRC Bot (BETA)
+# Title..........: Super DuckHunt v1.1.0 Python IRC Bot (BETA)
 # File...........: func.py (random non-script dependant functions)
-# Python version.: v3.12.0 (does not work in older versions)
-# Script version.: v1.0
+# File version...: v0.2
+# Python version.: v3.12.0
+# Script version.: v1.1.0+
+# Remarks........: This is a multi-use UDF script. Can be used with any python script.
 # Language.......: English
-# Description....: IRC Bot Script based off original DuckHunt bot by Menz Agitat
-#                  Lots of changes and twists added to this, following suit as Menz Agitat bot was said to be a "port"
-#                  of the NES game for IRC, This one would be equivelent to a SNES version, or a "sequel".
+# Description....: A UDF of my own design based on what I needed to build Super-DuckHunt 1.0+ Has multiple functions
+#                  using configparser, token strings, and time/time conversion. (See function list below)
 # Imports........: configparser
 # Author(s)......: Neo_Nemesis (aka coderusa, Neo`Nemesis)
 # Modified.......:
 # Contributors...: bildramer, Friithian, ComputerTech, esjay, TheFatherMind, [Neo from Freenode], End3r
 # ======================================================================================================================
 from configparser import ConfigParser
-# from configparser import RawConfigParser
 import configparser
 # CURRENT FUNCTIONS LIST - SEE FUNCTION SECTION FOR DESCRIPTIONS =======================================================
 # CNF FILE FUNCTIONS LIST #=============================================================================================
+# cnfdelete
 # cnfexists
 # cnfread
 # cnfwrite
@@ -33,6 +35,7 @@ import configparser
 # hour1
 # hour24
 # hourtomin
+# hourtosec
 # sectohour
 # sectomin
 # ======================================================================================================================
@@ -50,7 +53,6 @@ import configparser
 # Author.........: Neo_Nemesis
 # Modified.......:
 # ======================================================================================================================
-
 def cnfdelete(file, section, key):
     config = configparser.ConfigParser()
     config.read(file)
@@ -123,8 +125,6 @@ def cnfwrite(file, section, key, data):
 # ===> cnfwrite
 
 # TOKEN STRING FUNCTIONS
-# FUNCTIONS ============================================================================================================
-# Blank function box (temporary, to be removed)
 # FUNCTION #============================================================================================================
 # Name...........: addtok
 # Description....: Adds a token to the end of a token string
@@ -180,7 +180,9 @@ def deltok(string, token, char):
 #                  char = seperator character
 # Return values..: returns the specified token from the string
 # Author.........: Neo_Nemesis
-# Remarks........: PLEASE NOTE: First token is #0, second is #1 etc.
+# Remarks........: PLEASE NOTE x: First token A is 0, second B is 1 etc.
+#                  Tokens A-Z can be any value seperated by any seperator char
+#                  Most common is char 44 = ','
 # Modified.......:
 # Example........: gettok('A,B,C,D', '2', ',') - Returns "C"
 # ======================================================================================================================
@@ -316,6 +318,21 @@ def hourtomin(hours):
     return timeval
 # ===> hourtomin
 
+# FUNCTION #============================================================================================================
+# Name...........: hourtosec
+# Description....: Convert hours to seconds
+# Syntax.........: hourtosec(hours)
+# Parameters.....: hours - number of hours to be converted
+# Return values..: Returns the seconds value of input hours
+# Author.........: Neo_Nemesis
+# Modified.......:
+# Example........: hourtosec(24) --> returns 86400
+# ======================================================================================================================
+def hourtosec(hours):
+    timeval = int(hours) * 60
+    seconds = int(timeval) * 60
+    return str(seconds)
+# ===> hourtosec
 # FUNCTION #============================================================================================================
 # Name...........: sectohour
 # Description....: Converts seconds to hours
