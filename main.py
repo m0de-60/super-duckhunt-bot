@@ -3498,7 +3498,7 @@ while 1:
                                 xp = int(xp) - rxp
                             bot.duckinfo(username, b'xp', str(xp))
 
-                            if func.cnfexists('duckhunt.cnf', 'popcorn', str(username)):
+                            if func.cnfexists('duckhunt.cnf', 'popcorn', str(username).lower()) is True:
                                 irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > Tosses a piece of popcorn at nothing? There are no ducks in the area. \x034[-1 Popcorn] [-' + bytes(str(rxp), 'utf-8') + b' xp]\x03\r\n')
                                 continue
                             if not func.cnfexists('duckhunt.cnf', 'popcorn', str(username)):
@@ -3578,7 +3578,7 @@ while 1:
 
                                 # normal duck
                                 if func.gettok(duckdata, 1, ',') == 'normal':
-                                    irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b" > \x034UNLUCKY\x03     The duck didn't notice. Try again.     \x02\\_O< QUACK\x02    \x034[-" + bytes(str(rxp), 'utf-8') + b' xp]\r\n')
+                                    irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b" > \x034UNLUCKY\x03     The duck didn't seem to notice. Try again.     \x02\\_O< QUACK\x02    \x034[-" + bytes(str(rxp), 'utf-8') + b' xp]\r\n')
                                     continue
 
                                 # normal-gold
@@ -3588,7 +3588,7 @@ while 1:
                                     if func.numtok(duckdata, ',') == 2:
                                         duckdata = duckdata + ',1'
                                         duck[duckid] = duckdata
-                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b" > \x034UNLUCKY\x03     The duck didn't notice. Try again.     \x02\\_O< QUACK\x02    \x034[-" + bytes(str(rxp), 'utf-8') + b' xp]\r\n')
+                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b" > \x034UNLUCKY\x03     The duck didn't seem to notice. Try again.     \x02\\_O< QUACK\x02    \x034[-" + bytes(str(rxp), 'utf-8') + b' xp]\r\n')
                                         continue
 
                                     # 2nd miss determine if duck will turn golden
