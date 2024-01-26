@@ -3526,7 +3526,7 @@ while 1:
                                     xp = int(xp) - rxp
                                 bot.duckinfo(username, b'xp', str(xp))
 
-                                irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b" > \x034UNLUCKY\x03     You tossed the bread in the wrong direction because you're bedazzled!     \x034[-" + bytes(str(rxp), 'utf-8') + b' xp] [Bedazzled]\r\n')
+                                irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b" > \x034UNLUCKY\x03     You tossed in the wrong direction because you're bedazzled!     \x034[-" + bytes(str(rxp), 'utf-8') + b' xp] [Bedazzled]\r\n')
                                 continue
 
                             # determine duck
@@ -3630,14 +3630,22 @@ while 1:
                                         exp = duckexp + int(lcxp)
                                         xp = int(xp) + int(exp)
                                         bot.duckinfo(username, b'xp', str(xp))
-                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The duck ate the piece of bread!     \x02\\_O< QUAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(str(friend), 'utf-8') + b'] [+' + bytes(str(exp), 'utf-8') + b' xp - Lucky Charm]\x03\r\n')
+                                        wooid = 'bread'
+                                        if func.cnfexists('duckhunt.cnf', 'popcorn', str(username)):
+                                            wooid = 'popcorn'
+                                        wooid = wooid.encode()
+                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The duck ate the piece of ' + wooid + b'!     \x02\\_O< QUAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(str(friend), 'utf-8') + b'] [+' + bytes(str(exp), 'utf-8') + b' xp - Lucky Charm]\x03\r\n')
 
                                     # does not have lucky charm
                                     if not func.cnfexists('duckhunt.cnf', 'lucky_charm', str(username)):
                                         exp = duckexp
                                         xp = int(xp) + exp
                                         bot.duckinfo(username, b'xp', str(xp))
-                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The duck ate the piece of bread!     \x02\\_O< QUAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(str(friend), 'utf-8') + b'] [+' + bytes(str(duckexp), 'utf-8') + b' xp]\x03\r\n')
+                                        wooid = 'bread'
+                                        if func.cnfexists('duckhunt.cnf', 'popcorn', str(username)):
+                                            wooid = 'popcorn'
+                                        wooid = wooid.encode()
+                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314FRIEND\x03     The duck ate the piece of ' + wooid + b'!     \x02\\_O< QUAACK!\x02\x033   [BEFRIENDED DUCKS: ' + bytes(str(friend), 'utf-8') + b'] [+' + bytes(str(duckexp), 'utf-8') + b' xp]\x03\r\n')
 
                                     # reset duck info
                                     duck[duckid] = 'None'
@@ -3688,10 +3696,15 @@ while 1:
                                     # the duck kept flying
                                     if int(duckhp) > 1:
                                         ddmg = 1
+                                        wid = 'bread'
+                                        if func.cnfexists('duckhunt.cnf', 'popcorn', str(username)):
+                                            ddmg = 2
+                                            wid = 'popcorn'
+                                        wid = wid.encode()
                                         duckhp = int(duckhp) - int(ddmg)
                                         duckdata = func.gettok(duckdata, 0, ',') + ',' + func.gettok(duckdata, 1, ',') + ',' + str(duckhp)
                                         duck[duckid] = duckdata
-                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314QUACK!!\x03     The GOLDEN DUCK ate the piece of bread and kept flying! Try again.     \x034\x02\\_O< [ <3 +' + bytes(str(ddmg), 'utf-8') + b' ]\x02\x03\r\n')
+                                        irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314QUACK!!\x03     The GOLDEN DUCK ate the piece of ' + wid + b' and kept flying! Try again.     \x034\x02\\_O< [ <3 +' + bytes(str(ddmg), 'utf-8') + b' ]\x02\x03\r\n')
                                         continue
 
                                     # befriended the golden duck
