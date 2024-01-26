@@ -13,8 +13,8 @@ COMMANDS AND INFO: https://neo-coder-usa.github.io/super-duckhunt-web/super-duck
 --------------------------------------------------------------------------------------------------------------------------
 This program is a beta version, bugs or issues may be experienced. Please report all issues.
 
-All information can be found on the Super DuckHunt Web Repository
+All information can be found on the Super DuckHunt Web Repository <br>
 https://neo-coder-usa.github.io/super-duckhunt-web/
 
-All help information HTML files can be viewed/downloaded in the Super DuckHunt Web GitHub Repository
+All help information HTML files can be viewed/downloaded in the Super DuckHunt Web GitHub Repository <br>
 https://github.com/Neo-Coder-usa/super-duckhunt-web
