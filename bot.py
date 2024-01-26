@@ -716,7 +716,7 @@ def resetdef():
     global thebushes
     thebushes = 15
 
-    func.cnfwrite('duckhunt.cnf', 'rules', 'gunrconf', 'on')
+    func.cnfwrite('duckhunt.cnf', 'rules', 'gunconf', 'on')
     global gunconf
     gunconf = 'on'
 
@@ -830,6 +830,10 @@ def resetshot():
 def searchthebushes(user):
     srchtxt = 'By searching the bushes around the duck, you find'
     ammo = duckinfo(user, b'ammo')
+    global bang
+    bang = func.cnfread('duckhunt.cnf', 'rules', 'bang')
+    global bef
+    bef = func.cnfread('duckhunt.cnf', 'rules', 'bef')
 
     rounds = func.gettok(ammo, 0, '?')
     mrounds = func.gettok(ammo, 2, '?')
