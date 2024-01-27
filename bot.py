@@ -973,13 +973,13 @@ def shopprice(user, itemid):
     # gun uprade
     if int(itemid) == 7:
         if int(accuracy) > 90 and int(accuracy) < 100 and int(mreliability) >= 100:
-            return 500
+            return 350
         elif int(accuracy) <= 75 and int(mreliability) <= 80:
             return 200
         elif int(accuracy) > 75 and int(mreliability) > 80:
-            return 400
-        else:
             return 300
+        else:
+            return 250
     # Gun Lock
     if int(itemid) == 8:
         if int(mrounds) == 7:

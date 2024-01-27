@@ -161,7 +161,7 @@ def duck_exists():
 def duckstats(user, ruser):
     # No stats/user hasn't played
     if func.cnfexists('duckhunt.cnf', 'ducks', str(ruser)) is False and isconnect is True:
-        irc.send(b'PRIVMSG ' + duckchan + b' :' + ruser + b' > Has not played yet.\r\n')
+        irc.send(b'NOTICE ' + user + b' :' + ruser + b' > Has not played yet.\r\n')
         return 1
     # prep stats
     bot.iecheck(str(ruser))
@@ -2675,7 +2675,7 @@ while 1:
 
                         # new users with no stats
                         if not func.cnfexists('duckhunt.cnf', 'ducks', str(username)):
-                            dinfo = '7?3?7?3,0,0,0,1,200,0,0,75?85?85,0,0,12?12?3?3,0'
+                            dinfo = '7?3?7?3,0,0,0,1,200,0,0,75?80?80,0,0,12?12?3?3,0'
                             func.cnfwrite('duckhunt.cnf', 'ducks', str(username), str(dinfo))
                             func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '1')
 
@@ -2702,7 +2702,7 @@ while 1:
                             continue
 
                         # player is sabotaged
-                        if func.cnfexists('duckhunt.cnf', 'sabotage', str(username)) and func.cnfexists('duckhunt.cnf', 'trigger_lock', str(username) == False):
+                        if func.cnfexists('duckhunt.cnf', 'sabotage', str(username)) and func.cnfexists('duckhunt.cnf', 'trigger_lock', str(username)) == False:
                             func.cnfdelete('duckhunt.cnf', 'sabotage', str(username))
                             irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK PFFFFT*\x03     \x034Your gun was sabotaged.\x03\r\n')
                             continue
@@ -3414,7 +3414,7 @@ while 1:
                     if data[3].lower() == b':!bef' and bef == 'on':
                         # new users with no stats
                         if not func.cnfexists('duckhunt.cnf', 'ducks', str(username)):
-                            dinfo = '7?3?7?3,0,0,0,1,200,0,0,75?85?85,0,0,12?12?3?3,0'
+                            dinfo = '7?3?7?3,0,0,0,1,200,0,0,75?80?80,0,0,12?12?3?3,0'
                             func.cnfwrite('duckhunt.cnf', 'ducks', str(username), str(dinfo))
                             func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '1')
 
