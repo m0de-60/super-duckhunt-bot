@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 # ABOUT INFO# ==========================================================================================================
-# Title..........: Super DuckHunt v1.1 Python IRC Bot (BETA)
+# Title..........: Super DuckHunt v1.1.0 Python IRC Bot (BETA)
 # File...........: main.py
 # Python version.: v3.12.0 (does not work in older versions)
 # Script version.: v1.1.0 BETA
