@@ -877,7 +877,7 @@ while 1:
     txt = text.splitlines()
     x = 0
     for x in range(len(txt)):
-        print('DATA RECV: ' + txt[x].decode())
+        print(b'DATA RECV: ' + txt[x])
         data = txt[x].split(b" ")
         # Server ping
         if data[0] == b'PING':
