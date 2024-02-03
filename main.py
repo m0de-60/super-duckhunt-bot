@@ -3,7 +3,7 @@
 # Title..........: Super DuckHunt v1.1 Python IRC Bot (BETA)
 # File...........: main.py
 # Python version.: v3.12.0 (does not work in older versions)
-# Script version.: v1.1.0 BETA
+# Script version.: v1.1.2 BETA
 # Remarks........: Expansion and bug fixes from version 1.0
 # Language.......: English
 # Description....: IRC Bot Script based off original DuckHunt bot by Menz Agitat
@@ -1799,19 +1799,16 @@ while 1:
                         # /privmsg BotName set flood on 10,8
                         # /privmsg BotName set flood off
                         if data[4].lower() == b'flood' and len(data) >= 4:
-                            if len(data) == 4:
+                            if len(data) == 5:
                                 flc = func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck')
                                 if flc == '0':
-                                    irc.send(
-                                        b'NOTICE ' + username + b' :The flood protection is currently disabled.\r\n')
+                                    irc.send(b'NOTICE ' + username + b' :The flood protection is currently disabled.\r\n')
                                     continue
                                 if flc != '0':
-                                    cmds = func.gettok(str(data[6].decode()), 0, ',')
-                                    secs = func.gettok(str(data[6].decode()), 1, ',')
-                                    irc.send(
-                                        b'NOTICE ' + username + b' :The current flood protection settings are: ' + bytes(
-                                            str(cmds), 'utf-8') + b'requests in: ' + bytes(str(secs),
-                                                                                           'utf-8') + b' seconds.\r\n')
+                                    det = func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck')
+                                    cmds = func.gettok(str(det), 0, ',')
+                                    secs = func.gettok(str(det), 1, ',')
+                                    irc.send(b'NOTICE ' + username + b' :The current flood protection settings are: ' + bytes(str(cmds), 'utf-8') + b' requests in: ' + bytes(str(secs), 'utf-8') + b' seconds.\r\n')
                                     continue
 
                             if data[5].lower() == b'on' and len(data) == 7 and func.numtok(str(data[6]), ',') == 2:
