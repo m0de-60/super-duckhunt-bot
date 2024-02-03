@@ -1,5 +1,5 @@
 --------------------------------------------------------
-Super DuckHunt IRC Bot v1.1.0 BETA
+Super DuckHunt IRC Bot v1.1.2 BETA
 By Neo_Nemesis
 --------------------------------------------------------
 Requires Python 3.12.0
