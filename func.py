@@ -9,15 +9,18 @@
 # Language.......: English
 # Description....: A UDF of my own design based on what I needed to build Super-DuckHunt 1.0+ Has multiple functions
 #                  using configparser, token strings, and time/time conversion. (See function list below)
-# Imports........: configparser
+# Imports........: configparser, re
 # Author(s)......: Neo_Nemesis (aka coderusa, Neo`Nemesis)
 # Modified.......:
-# Contributors...: bildramer, Friithian, ComputerTech, esjay, TheFatherMind, [Neo from Freenode], End3r
+# Contributors...: ComputerTech
 # ======================================================================================================================
 from configparser import ConfigParser
 import configparser
+import re
 # CURRENT FUNCTIONS LIST - SEE FUNCTION SECTION FOR DESCRIPTIONS =======================================================
-# CNF FILE FUNCTIONS LIST #=============================================================================================
+# IRC TEXT FUNCTIONS LIST # ============================================================================================
+# striptext
+# CNF FILE FUNCTIONS LIST # ============================================================================================
 # cnfdelete
 # cnfexists
 # cnfread
@@ -39,6 +42,21 @@ import configparser
 # sectohour
 # sectomin
 # ======================================================================================================================
+
+# IRC TEXT FUNCTIONS
+# FUNCTION #============================================================================================================
+# Name...........: striptext
+# Description....: remove IRC colors from text
+# Syntax.........: striptext(text)
+# Parameters.....: text = String to strip colors from
+# Return values..: Returns = text string with color coding removed
+# Author.........: ComputerTech
+# Modified.......: Neo_Nemesis
+# ======================================================================================================================
+def striptext(txtdat):
+    stripper = re.compile(r'\x03(?:\d{1,2}(?:,\d{1,2})?)?', re.UNICODE)
+    return stripper.sub('', txtdat)
+# ==> striptext
 
 # CNF FILE FUNCTIONS
 # FUNCTION #============================================================================================================
