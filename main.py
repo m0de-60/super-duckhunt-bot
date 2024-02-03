@@ -2329,10 +2329,8 @@ while 1:
                                     irc.send(b'NOTICE ' + username + b' :Based on current game rules, this item is not available.\r\n')
                                     continue
                                 # target already sabotaged
-                                teffects = bot.duckinfo(data[5], b'effects')
-                                if func.cnfexists('duckhunt.cnf', 'sabotage', str(data[5])) == True:
-                                    irc.send(
-                                        b'NOTICE ' + username + b' :' + data[5] + b"'s gun is already sabotaged.\r\n")
+                                if func.cnfexists('duckhunt.cnf', 'sabotage', str(data[5].lower())) == True:
+                                    irc.send(b'NOTICE ' + username + b' :' + data[5] + b"'s gun is already sabotaged.\r\n")
                                     continue
                                 # purchase
                                 xp = int(xp) - bot.shopprice(username, itemid)
@@ -2340,9 +2338,7 @@ while 1:
                                 # target effects apply - lasts 1 shot
                                 func.cnfwrite('duckhunt.cnf', 'sabotage', str(data[5]), str(True))
                                 # confirmation
-                                irc.send(
-                                    b'PRIVMSG ' + duckchan + b' :' + username + b' > Sabotages the gun while ' + data[
-                                        5] + b" isn't looking.\r\n")
+                                irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > Sabotages the gun while ' + data[5] + b" isn't looking.\r\n")
                                 continue
 # 18 - accident insurance ==============================================================================================
                             # update 1.1.0 - accident insurance now increases lost xp +4 in exchange for no confiscation
@@ -2813,8 +2809,8 @@ while 1:
                             continue
 
                         # player is sabotaged
-                        if func.cnfexists('duckhunt.cnf', 'sabotage', str(username)) and func.cnfexists('duckhunt.cnf', 'trigger_lock', str(username)) == False:
-                            func.cnfdelete('duckhunt.cnf', 'sabotage', str(username))
+                        if func.cnfexists('duckhunt.cnf', 'sabotage', str(username).lower()) and func.cnfexists('duckhunt.cnf', 'trigger_lock', str(username).lower()) == False:
+                            func.cnfdelete('duckhunt.cnf', 'sabotage', str(username).lower())
                             irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK PFFFFT*\x03     \x034Your gun was sabotaged.\x03\r\n')
                             continue
 
