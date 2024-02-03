@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 # ABOUT INFO# ==========================================================================================================
-# Title..........: Super DuckHunt v1.1.0 Python IRC Bot (BETA)
+# Title..........: Super DuckHunt v1.1 Python IRC Bot (BETA)
 # File...........: main.py
 # Python version.: v3.12.0 (does not work in older versions)
 # Script version.: v1.1.0 BETA
@@ -75,8 +75,12 @@ bef = func.cnfread('duckhunt.cnf', 'rules', 'bef')
 flood_check = False
 if func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck') != '0':
     flood_check = True
+# ADD-ON FOR RELAY BOTS (INCOMPLETE/DISABLED) ==========================================================================
+# if func.cnfexists('duckhunt.cnf', 'duckhunt', 'relays') is False:
+#    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', '0')
+# relaybot = func.cnfread('duckhunt.cnf', 'duckhunt', 'relays').lower()
 # GLOBAL VARIABLES # ===================================================================================================
-botversion = b'1.1.0B'  # Current Bot Version hard code DO NOT CHANGE
+botversion = b'1.1.2'  # Current Bot Version hard code DO NOT CHANGE
 # =========================================================
 duckhunt = True  # Main duckhunt control
 # =========================================================
@@ -104,7 +108,7 @@ month = func.cnfread('duckhunt.cnf', 'top_shot', 't_month')
 week = func.cnfread('duckhunt.cnf', 'top_shot', 't_week')
 day = func.cnfread('duckhunt.cnf', 'top_shot', 't_day')
 
-# topduck fix update 1.1.0
+# topduck fix #1 of many - update 1.1.0
 if not func.cnfexists('duckhunt.cnf', 'ducks', 'cache'):
     func.cnfwrite('duckhunt.cnf', 'ducks', 'cache', '0')
 
@@ -526,7 +530,7 @@ def shopmenu(user):
     # refill magazine
     shop2 = '2:\x037,1 Refill Magazine\x034,1 (' + str(bot.shopprice(user, 2)) + ' xp)'
     if infammo == 'on':
-        shop2 = '1:\x0314,1 Refill Magazine (' + str(bot.shopprice(user, 1)) + ' xp)'
+        shop2 = '2:\x0314,1 Refill Magazine (' + str(bot.shopprice(user, 1)) + ' xp)'
     # gun cleaning
     shop3 = '3:\x037,1 Gun Cleaning\x034,1 (' + str(bot.shopprice(user, 3)) + ' xp)'
     # explosive ammo
@@ -877,23 +881,25 @@ while 1:
     txt = text.splitlines()
     x = 0
     for x in range(len(txt)):
+        # v 1.1.2 changed here to remove bytes decoding.
         print(b'DATA RECV: ' + txt[x])
         data = txt[x].split(b" ")
         # Server ping
         if data[0] == b'PING':
             irc.send(b"PONG " + data[1] + b'\r\n')
             continue
+        # Excess flood reconnect v 1.1.2
+        if data[0].lower() == b'error':
+            if data[1].lower() == b':closing' and data[2].lower() == b'link:':
+                if flood_cont == True:
+                    flood_cont = False
+                exitvar = 'Disconnect'
+                time.sleep(3)
+                continue
 # ======================================================================================================================
 # Messages and data
 # ======================================================================================================================
         if len(data) > 2:
-            # if duckhunt == False:
-            #     un = func.gettok(data[0], 0, '!')
-            #     un = un.replace(':', '')
-            #     un = un.decode()
-            #    if func.istok(un.lower(), botmaster, ',') == False and func.istok(un.lower(), adminlist, ',') == False:
-            #        time.sleep(2)
-            #        continue
 # ======================================================================================================================
 # JOIN channel after MOTD and start duck timer
 # ======================================================================================================================
@@ -984,10 +990,31 @@ while 1:
                     time.sleep(2)
                     continue
 # ======================================================================================================================
+# for relay bots (not used/not finished)- <RelayName> [servername] <username> text
+# ======================================================================================================================
+                # data3 = b''
+                # data4 = b''
+                # data5 = b''
+                # if func.istok(relaybot, dusername, ',') is True and len(data) >= 6:
+                #     rbusername = data[4].decode()
+                #     rbusername = rbusername.lower()
+                #     rbusername = func.striptext(rbusername)
+                #     rbusername = rbusername.replace('<', '')
+                #     rbusername = rbusername.replace('>', '')
+                #     print('rbusername: ' + func.striptext(rbusername))
+                #     username = rbusername.encode()
+                #     dusername = rbusername
+                #     data3 = data[5].lower()
+                #     if len(data) >= 7:
+                #         data4 = data[6]
+                #     if len(data) == 8:
+                #         data5 = data[5]
+                #    print('rbusername data: ' + func.striptext(rbusername) + ' ' + str(data3) + ' ' + str(data4) + ' ' + str(data5))
+
+# ======================================================================================================================
 # Flood control here
 # ======================================================================================================================
                 # flood control activated
-                # print(data[3].decode())
                 if flood_check is True and flood_cont is True and duckhunt is True:
                     if data[3] == b':!flood':
                         temp = txt[x].split(b'!')
@@ -1016,7 +1043,7 @@ while 1:
                     elif woid.lower() == '!shop' and len(data) == 4:
                         flood = int(flood) + 4
                     elif woid.lower() == '!duckstats':
-                        flood = int(flood) + 3
+                        flood = int(flood) + 4
                     flood = int(flood) + 1
                     f_time = time.time() - float(flood_time)
                     cmds = func.gettok(func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck'), 0, ',')
@@ -1027,23 +1054,15 @@ while 1:
                         flood = 0
                     if int(flood) > int(cmds):
                         f_time = time.time() - float(flood_time)
-                        # print('FLOOD TIME: ' + str(f_time))
                         if float(f_time) <= float(secs):
                             flood_cont = True
                             flood_timer = time.time()
-                            time.sleep(2)
                             irc.send(b'PRIVMSG ' + duckchan + b' :\x034* Flood Control Activated *\x03\r\n')
                             continue
                         if float(f_time) > float(secs):
                             flood_time = time.time()
                             flood = 0
-# ======================================================================================================================
-# Parse requesting username, and check for ignore
-# ======================================================================================================================
-                # temp = txt[x].split(b'!')
-                # username = temp[0].strip(b':')
-                # dusername = username.decode()  # for botmaster, admin, ignore, and to fix case sensative bug v1.1.0
-                # dusername = dusername.lower()
+
 # ======================================================================================================================
 # CTCP VERSION, PING, FINGER
 # ======================================================================================================================
@@ -1073,6 +1092,95 @@ while 1:
 # BOTMASTER AND ADMIN CONTROLS (PRIVMSG): /privmsg BotName <command> <parameters>
 # ======================================================================================================================
                 if data[2].lower() == botname.lower():
+
+# relay <add/del/list> <relayname> IN COMPLETE =========================================================================
+#           /privmsg botname relay <add/del> <relayname> (botmaster only)
+#                    if data[3].lower() == b':relay' and func.istok(botmaster, dusername, ',') is True:
+#                        if len(data) == 5 and data[4].lower() == b'list':
+#                            relaybot = func.cnfread('duckhunt.cnf', 'duckhunt', 'relays')
+#                            if relaybot == '0':
+#                                irc.send(b'NOTICE ' + username + b' :The relay bot list is currently empty.\r\n')
+#                                continue
+#                            rbt = relaybot.replace(',', ' ')
+#                            irc.send(b'NOTICE' + username + b' :Relay bot list: ' + rbt.encode() + b'\r\n')
+#                            continue
+#                        if len(data) == 6:
+#                            if data[4].lower() == b'add':
+#                                relaybot = func.cnfread('duckhunt.cnf', 'duckhunt', 'relays')
+#                                rb = data[5].decode()
+#                                if func.istok(relaybot, rb.lower(), ',') is True:
+#                                  irc.send(b'NOTICE ' + username + b' :' + data[5] + b' already exists in the relay bot list.\r\n')
+#                                  continue
+#                                if relaybot == '0':
+#                                    rb = data[5].decode()
+#                                    relaybot = rb.lower()
+#                                    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', str(relaybot))
+#                                    irc.send(b'NOTICE ' + username + b' :' + data[5] + b' added to relay bot list.\r\n')
+#                                    continue
+#                                if relaybot != '0':
+#                                    rb = data[5].decode()
+#                                    relaybot = func.addtok(relaybot, str(rb).lower(), ',')
+#                                    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', str(relaybot))
+#                                    irc.send(b'NOTICE ' + username + b' :' + data[5] + b' added to relay bot list.\r\n')
+#                                    continue
+#                            if data[4].lower() == b'del':
+#                                if data[5].lower() == b'all':
+#                                    relaybot = '0'
+#                                    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', '0')
+#                                    irc.send(b'NOTICE ' + username + b' :Relay bot list has been cleared.\r\n')
+#                                    continue
+#                                rb = data[5].decode()
+#                                if func.istok(relaybot, rb.lower(), ',') is False:
+#                                    irc.send(b'NOTICE ' + username + b' :' + data[5] + b' is not listed in the relay bot list.\r\n')
+#                                    continue
+#                                if relaybot == rb.lower():
+#                                    relaybot = '0'
+#                                    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', '0')
+#                                    irc.send(b'NOTICE ' + username + b' :' + data[5] + b' has been removed from the relay bot list.\r\n')
+#                                    continue
+#                                if func.istok(relaybot, rb.lower(), ',') is True:
+#                                    relaybot = func.deltok(relaybot, rb.lower(), ',')
+#                                    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', str(relaybot))
+#                                    irc.send(b'NOTICE ' + username + b' :' + data[5] + b' has been removed from the relay bot list.\r\n')
+#                                    continue
+#                        continue
+# boost <player> v 1.1.2 ===============================================================================================
+#           /privmsg botname boost <player>
+                    if data[3].lower() == b':boost' and len(data) == 5:
+                        tusername = data[4].lower()
+                        if func.istok(botmaster, str(dusername), ',') is False and func.istok(adminlist, str(dusername), ',') is False:
+                            continue
+                        if func.cnfexists('duckhunt.cnf', 'ducks', str(tusername)) is False:
+                            irc.send(b'NOTICE ' + username + b' :' + tusername + b" hasn't played yet.\r\n")
+                            continue
+                        if bang == 'on':
+                            ammo = bot.duckinfo(tusername, b'ammo')
+                            mrounds = func.gettok(ammo, 2, '?')
+                            rounds = mrounds
+                            mags = func.gettok(ammo, 1, '?')
+                            mmags = func.gettok(ammo, 3, '?')
+                            ammo = str(rounds) + '?' + str(mags) + '?' + str(mrounds) + '?' + str(mmags)
+                            bot.duckinfo(str(tusername), b'ammo', str(ammo))
+                            xp = bot.duckinfo(tusername, b'xp')
+                            xp = int(xp) + 75
+                            bot.duckinfo(str(tusername), b'xp', str(xp))
+                            irc.send(b'NOTICE ' + username + b' :' + tusername + b' has received a boost. Rounds have been reloaded (1 mag) and 75 xp.\r\n')
+                            irc.send(b'NOTICE ' + tusername + b' :You have received a boost. You were given: 1 full magazine and 75 xp from a admin or botmaster.\r\n')
+                            continue
+                        if bang == 'off':
+                            breadbox = bot.duckinfo(tusername, b'bread')
+                            mbread = func.gettok(breadbox, 0, '?')
+                            bread = mbread
+                            loaf = func.gettok(breadbox, 2, '?')
+                            mloaf = func.gettok(breadbox, 3, '?')
+                            breadbox = str(bread) + '?' + str(mbread) + '?' + str(loaf) + '?' + str(mloaf)
+                            bot.duckinfo(tusername, b'bread', str(breadbox))
+                            xp = bot.duckinfo(tusername, b'xp')
+                            xp = int(xp) + 75
+                            bot.duckinfo(str(tusername), b'xp', str(xp))
+                            irc.send(b'NOTICE ' + username + b' :' + tusername + b' has received a boost. Bread has been reloaded (1 loaf) and 75 xp.\r\n')
+                            irc.send(b'NOTICE ' + tusername + b' :You have received a boost. You were given: 1 loaf of bread and 75 xp from a admin or botmaster.\r\n')
+                            continue
 # maint <mode> =========================================================================================================
 #           /privmsg BotName maint <mode> <data>
                     if data[3].lower() == b':maint' and func.istok(botmaster, str(dusername), ',') is True:
@@ -1688,7 +1796,7 @@ while 1:
                             continue
 
                         # set flood <on/off> <msg,time>
-                        # /privmsg BotName set flood on 45,46
+                        # /privmsg BotName set flood on 10,8
                         # /privmsg BotName set flood off
                         if data[4].lower() == b'flood' and len(data) >= 4:
                             if len(data) == 4:
@@ -1706,15 +1814,12 @@ while 1:
                                                                                            'utf-8') + b' seconds.\r\n')
                                     continue
 
-                            if data[5].lower() == b'on' and len(data) == 7 and func.numtok(data[6], ',') == 2:
+                            if data[5].lower() == b'on' and len(data) == 7 and func.numtok(str(data[6]), ',') == 2:
                                 func.cnfwrite('duckhunt.cnf', 'duckhunt', 'floodcheck', str(data[6].decode()))
                                 flood_check = True
                                 cmds = func.gettok(str(data[6].decode()), 0, ',')
                                 secs = func.gettok(str(data[6].decode()), 1, ',')
-                                irc.send(
-                                    b'NOTICE ' + username + b' :The flood protection settings have been changed to: ' + bytes(
-                                        str(cmds), 'utf-8') + b'requests in: ' + bytes(str(secs),
-                                                                                       'utf-8') + b' seconds.\r\n')
+                                irc.send(b'NOTICE ' + username + b' :The flood protection settings have been changed to: ' + bytes(str(cmds), 'utf-8') + b' requests in: ' + bytes(str(secs), 'utf-8') + b' seconds.\r\n')
                                 continue
                             if data[5].lower() == b'off':
                                 flood_check = False
@@ -1723,9 +1828,13 @@ while 1:
                                 continue
                         continue
 # ======================================================================================================================
+# Parsing user name and data (for relay bots) v. 1.1.2
+# ======================================================================================================================
+                # if func.istok(relaybot, dusername, ',') is True:
+
+# ======================================================================================================================
 # Botmaster and Admin CHANNEL COMMANDS * *
 # ======================================================================================================================
-
                 if data[2].lower() == duckchan:
                     botmaster = func.cnfread('duckhunt.cnf', 'duckhunt', 'botmaster').lower()
                     adminlist = func.cnfread('duckhunt.cnf', 'duckhunt', 'admin').lower()
@@ -1742,7 +1851,9 @@ while 1:
 # ======================================================================================================================
 # !duckhunt <on/off> (Botmaster and Admin only)
 # ======================================================================================================================
-                        if data[3].lower() == b':!duckhunt' and len(data) == 5:
+                        if data[3].lower() == b':!duckhunt':
+                            if len(data) != 5:
+                                continue
                             if func.istok(botmaster, dusername, ',') is False and func.istok(adminlist, dusername, ',') is False:
                                 continue
                             if data[4].lower() == b'on':
@@ -1806,7 +1917,7 @@ while 1:
                             data4 = data[4].decode()
                             if not data4.isnumeric():
                                 continue
-                            itemid = int(data[4])
+                            itemid = int(data4)
                             # data prep
                             ammo = bot.duckinfo(username, b'ammo')
                             rounds = func.gettok(ammo, 0, '?')
@@ -2674,6 +2785,9 @@ while 1:
                         # print('BANG result: ' + str(bangresult))
 
                         # new users with no stats
+                        # b'playername' = Rounds?Mags?MaxRounds?MaxMags,Ducks,GoldenDucks,xp,level,levelup,
+                        #                 notusedanymore,notusedanymore,Accuracy?Reliability?MaxReliability,BestTime,
+                        #                 Accidents,Bread?MaxBread,Loaf,MaxLoaf,DuckFriends
                         if not func.cnfexists('duckhunt.cnf', 'ducks', str(username)):
                             dinfo = '7?3?7?3,0,0,0,1,200,0,0,75?80?80,0,0,12?12?3?3,0'
                             func.cnfwrite('duckhunt.cnf', 'ducks', str(username), str(dinfo))
@@ -2686,7 +2800,7 @@ while 1:
                             continue
 
                         # player is bombed
-                        if func.cnfexists('duckhunt.cnf', 'bombed', str(username)):
+                        if func.cnfexists('duckhunt.cnf', 'bombed', str(username).lower()):
                             irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x034Your clothes are crusty and filthy from being duck bombed. You cannot hunt ducks like this, you need new clothes.\r\n')
                             continue
 
@@ -2851,12 +2965,12 @@ while 1:
 
                                 # determine xp subtract
                                 rxp = dmg
-                                if int(xp) >= 10000 or int(level) >= 10:
-                                    rxp = dmg * 6
-                                elif int(xp) >= 5000 and int(xp) < 10000 and int(level) < 10:
-                                    rxp = dmg * 4
-                                elif int(xp) < 5000 and int(xp) >= 1500:
+                                if int(xp) >= 10000:
                                     rxp = dmg * 2
+                                if int(xp) >= 5000 and int(xp) < 10000:
+                                    rxp = dmg + 3
+                                if int(xp) < 5000 and int(xp) >= 1500:
+                                    rxp = dmg + 1
 
                                 # gunconf off is off, extra -xp - v1.1.0
                                 if gunconf == 'off':
@@ -2951,11 +3065,11 @@ while 1:
                                     # determine xp subtract
                                     rxp = dmg
                                     if int(xp) >= 10000:
-                                        rxp = dmg * int(level)
-                                    if int(xp) >= 5000 and int(xp) < 10000:
-                                        rxp = dmg * 4
-                                    if int(xp) < 5000 and int(xp) >= 1500:
                                         rxp = dmg * 2
+                                    if int(xp) >= 5000 and int(xp) < 10000:
+                                        rxp = dmg + 3
+                                    if int(xp) < 5000 and int(xp) >= 1500:
+                                        rxp = dmg + 1
 
                                     # gunconf is off
                                     if gunconf == 'off':
@@ -3252,12 +3366,12 @@ while 1:
 
                                 # determine xp subtract
                                 rxp = dmg
-                                if int(xp) >= 10000 or int(level) >= 10:
-                                    rxp = dmg * int(level)
-                                if int(xp) >= 5000 and int(xp) < 10000 and int(level) < 10:
-                                    rxp = dmg * 4
-                                if int(xp) < 5000 and int(xp) >= 1500:
+                                if int(xp) >= 10000:
                                     rxp = dmg * 2
+                                if int(xp) >= 5000 and int(xp) < 10000:
+                                    rxp = dmg + 3
+                                if int(xp) < 5000 and int(xp) >= 1500:
+                                    rxp = dmg + 1
 
                                 # gunconf is off
                                 if gunconf == 'off':
@@ -3316,11 +3430,11 @@ while 1:
                                 # determine xp subtract
                                 rxp = dmg
                                 if int(xp) >= 10000:
-                                    rxp = dmg * int(level)
-                                if int(xp) >= 5000 and int(xp) < 10000:
-                                    rxp = dmg * 4
-                                if int(xp) < 5000 and int(xp) >= 1500:
                                     rxp = dmg * 2
+                                if int(xp) >= 5000 and int(xp) < 10000:
+                                    rxp = dmg + 3
+                                if int(xp) < 5000 and int(xp) >= 1500:
+                                    rxp = dmg + 1
                                 if int(xp) < 1500:
                                     rxp = dmg
                                 # gunconf is off
@@ -3478,7 +3592,6 @@ while 1:
                                 popc = int(popc) - 1
                                 func.cnfwrite('duckhunt.cnf', 'popcorn', str(username), str(popc))
 
-                        # bot.duckinfo(username, b'bread', str(bread) + '?' + str(mbread))
                         breadbox = str(bread) + '?' + str(mbread) + '?' + str(loaf) + '?' + str(mloaf)
                         bot.duckinfo(username, b'bread', str(breadbox))
                         # no duck in the area
