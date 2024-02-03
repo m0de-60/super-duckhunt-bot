@@ -704,7 +704,7 @@ def resetdef():
     global friendrate
     friendrate = 71
 
-    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'floodcheck', '24,25')
+    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'floodcheck', '10,8')
     global flood_check
     flood_check = True
 
