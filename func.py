@@ -1,10 +1,10 @@
 #! /usr/bin/python3
 # ABOUT INFO# ==========================================================================================================
-# Title..........: Super DuckHunt v1.1.0 Python IRC Bot (BETA)
+# Title..........: Super DuckHunt v1.1.3 Python IRC Bot (BETA)
 # File...........: func.py (random non-script dependant functions)
 # File version...: v0.2
 # Python version.: v3.12.0
-# Script version.: v1.1.0+
+# Script version.: v1.1.3
 # Remarks........: This is a multi-use UDF script. Can be used with any python script.
 # Language.......: English
 # Description....: A UDF of my own design based on what I needed to build Super-DuckHunt 1.0+ Has multiple functions

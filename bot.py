@@ -1,9 +1,9 @@
 #! /usr/bin/python3
 # ABOUT INFO# ==========================================================================================================
-# Title..........: Super DuckHunt v1.1 Python IRC Bot (BETA)
+# Title..........: Super DuckHunt v1.1.3 Python IRC Bot (BETA)
 # File...........: bot.py (bot script dependant functions)
 # Python version.: v3.12.0 (does not work in older versions)
-# Script version.: v1.1.0
+# Script version.: v1.1.3
 # Language.......: English
 # Description....: IRC Bot Script based off original DuckHunt bot by Menz Agitat
 #                  Lots of changes and twists added to this, following suit as Menz Agitat bot was said to be a "port"
@@ -65,9 +65,8 @@ def cnfcleanup():
     time.sleep(0.1)
     for name, value in parser.items('sabotage'):
         datkey = '%s' % name
-        if not func.cnfexists('duckhunt.cnf', 'ducks', str(datkey)):
-            func.cnfdelete('duckhunt.cnf', 'sabotage', str(datkey))
-            continue
+        func.cnfdelete('duckhunt.cnf', 'sabotage', str(datkey))
+        continue
     time.sleep(0.1)
     for name, value in parser.items('trigger_lock'):
         datkey = '%s' % name
@@ -863,7 +862,7 @@ def searchthebushes(user):
 
     if int(srch) == 5:
         if int(rounds) == int(mrounds) or bang == 'off':
-            return str(srchtxt) + ' a fishing weight. \x033Better luck next time.\x03'
+            return str(srchtxt) + ' a rusty fishing lure. \x033Better luck next time.\x03'
 
         if int(rounds) < int(mrounds):
             rounds = int(rounds) + 1
@@ -894,17 +893,18 @@ def searchthebushes(user):
         found = 'Frog'
         xp = int(xp) + 25
         duckinfo(str(user), b'xp', str(xp))
-        return str(srchtxt) + ' a frog. * RIBBIT * \x033[+25 xp]\x03'
+        return str(srchtxt) + ' a frog.    * RIBBIT * \x033[+25 xp]\x03'
 
     if int(srch) == 9:
         found = 'Sunglasses'
         func.cnfwrite('duckhunt.cnf', 'sunglasses', str(user), str(time.time()))
         return str(srchtxt) + ' a pair of Sunglasses. \x033You are now protected from bedazzlement for 24 hours.\x03'
 
+    # future secrets: this second frog will eventually become a fishing pole. Trout master?
     if int(srch) == 10:
         xp = int(xp) + 25
         duckinfo(str(user), b'xp', str(xp))
-        return str(srchtxt) + ' a frog. * RIBBIT * \x033[+25 xp]\x03'
+        return str(srchtxt) + ' a frog.    * RIBBIT * \x033[+25 xp]\x03'
 
     if int(srch) == 11:
         xp = int(xp) + 175
