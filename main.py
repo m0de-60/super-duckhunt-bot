@@ -1028,8 +1028,9 @@ while 1:
                     # print('rbusername: ' + func.striptext(rbusername))
                     username = rbusername.encode()
                     dusername = rbusername.lower()
-                    if bot.duckinfo(username, b'inv') != '1' and func.cnfexists('duckhunt.cnf', 'ducks', str(username)) == True:
-                        bot.duckinfo(username, b'inv', '1')
+                    if func.cnfexists('duckhunt.cnf', 'ducks', str(username)) == True:
+                        if bot.duckinfo(username, b'inv') != '1':
+                            bot.duckinfo(username, b'inv', '1')
                     data3 = data[5].lower()
                     if len(data) > 6:
                         data4 = data[6]
