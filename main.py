@@ -499,9 +499,9 @@ def level_up(user):
 # Modified.......:
 # ======================================================================================================================
 def namecheck(name):
-    namech = name.replace("b'", '')
-    namech = namech.replace("'", '')
-    namech = namech.lower()
+    # namech = name.replace("b'", '')
+    # namech = namech.replace("'", '')
+    namech = name.lower()
     # print('userchan ' + str(userchan))
     nnx = 1
     while nnx <= userchan:
@@ -2019,7 +2019,8 @@ while 1:
                                         if func.cnfexists('duckhunt.cnf', 'ducks', str(data5.lower())) == False:
                                             irc.send(b'PRIVMSG ' + duckchan + b' :' + data5 + b" hasn't played yet.\r\n")
                                             continue
-                                        if namecheck(str(data5)) == False and bot.duckinfo(str(data5.lower()), b'inv') == '0':
+                                        print('here ' + str(data5.lower()))
+                                        if namecheck(str(data5.decode())) == False and bot.duckinfo(str(data5.lower()), b'inv') == '0':
                                             irc.send(b'PRIVMSG ' + duckchan + b' :' + data5 + b' is not in the channel.\r\n')
                                             continue
                                     # normal players v1.1.3
@@ -2027,7 +2028,7 @@ while 1:
                                         if func.cnfexists('duckhunt.cnf', 'ducks', str(data[5].lower())) == False:
                                             irc.send(b'NOTICE ' + username + b' :' + data[5] + b" hasn't played yet.\r\n")
                                             continue
-                                        if namecheck(str(data[5])) == False and bot.duckinfo(str(data[5].lower()), b'inv') == '0':
+                                        if namecheck(str(data[5].decode())) == False and bot.duckinfo(str(data[5].lower()), b'inv') == '0':
                                             irc.send(b'NOTICE ' + username + b' :' + data[5] + b' is not in the channel.\r\n')
                                             continue
                                     # can't use it on yourself
@@ -2092,7 +2093,7 @@ while 1:
                                 bot.duckinfo(username, b'ammo', str(ammo))
                                 # confirmation
                                 if data4 != b'' and datarelay == True:
-                                    irc.send(b'PRIVMSG ' + username + b' :You refilled 1 magazine.\r\n')
+                                    irc.send(b'PRIVMSG ' + duckchan + b' :You refilled 1 magazine.\r\n')
                                     continue
                                 irc.send(b'NOTICE ' + username + b' :You refilled 1 magazine.\r\n')
                                 continue
