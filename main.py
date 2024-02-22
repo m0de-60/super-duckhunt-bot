@@ -80,7 +80,7 @@ if func.cnfexists('duckhunt.cnf', 'duckhunt', 'relays') is False:
     func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', '0')
 relaybot = func.cnfread('duckhunt.cnf', 'duckhunt', 'relays').lower()
 # GLOBAL VARIABLES # ===================================================================================================
-botversion = b'1.1.3b'  # Current Bot Version hard code DO NOT CHANGE
+botversion = b'1.1.3'  # Current Bot Version hard code DO NOT CHANGE
 # =========================================================
 duckhunt = True  # Main duckhunt control
 # =========================================================
@@ -1025,9 +1025,13 @@ while 1:
                     rbusername = rbusername.replace('<', '')
                     rbusername = rbusername.replace('>', '')
                     rbusername = rbusername.replace('', '')
-                    # print('rbusername: ' + func.striptext(rbusername))
-                    username = rbusername.encode()
-                    dusername = rbusername.lower()
+                    rbusername = rbusername.replace('', '')
+                    print('rbusername: ' + func.striptext(rbusername))
+                    # username = rbusername.encode()
+                    rbusername = bytes(str(rbusername), 'utf-8')
+                    username = rbusername
+                    dusername = username.decode()
+                    dusername = dusername.lower()
                     if func.cnfexists('duckhunt.cnf', 'ducks', str(username)) == True:
                         if bot.duckinfo(username, b'inv') != '1':
                             bot.duckinfo(username, b'inv', '1')
@@ -2864,7 +2868,7 @@ while 1:
                                 continue
 
                             # can't bomb yourself
-                            if str(data[4].lower()) == str(username.lower()) or data4.lower() == str(username.lower()):
+                            if str(data[4].lower()) == str(username.lower()) or str(data4.lower()) == str(username.lower()):
                                 if data4 != b'' and datarelay == True:
                                     irc.send(b'PRIVMSG ' + duckchan + b" :Don't do that to yourself!\r\n")
                                     continue
@@ -4264,10 +4268,10 @@ while 1:
                     # !spawnduck <normal/golden> - Botmaster and Admin only
                     # <normal/golden> is optional, if using just !spawnduck a normal duck is spawned.
                     # ======================================================================================================================
-                    if data[3].lower() == b':!spawnduck':
+                    if data[3].lower() == b':!spawnduck' or data3.lower() == b'!spawnduck':
                         if func.istok(botmaster, str(dusername), ',') == False and func.istok(adminlist, str(dusername),',') == False:
                             continue
-                        if len(data) == 4:
+                        if len(data) == 4 or datarelay is True:
                             for x in range(maxducks + 1):
                                 if x == 0:
                                     continue
@@ -4277,8 +4281,7 @@ while 1:
                                     start_time = time.time()
                                     break
                                 if x == maxducks:
-                                    irc.send(
-                                        b'NOTICE ' + username + b' :The maximum amount of ducks are currently spawned.\r\n')
+                                    irc.send(b'NOTICE ' + username + b' :The maximum amount of ducks are currently spawned.\r\n')
                                     break
                                 continue
                         if len(data) == 5:
