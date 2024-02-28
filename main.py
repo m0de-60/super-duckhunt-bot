@@ -857,6 +857,15 @@ def top_shot():
     return
 # ===> top_shot
 
+def utfix(datatext):
+    try:
+        datatext.decode()
+        # print('UTFIX: True')
+        return True
+    except UnicodeError:
+        # print('UTFIX: False')
+        return False
+
 # ======================================================================================================================
 # MAIN LOOP STUFF
 # ======================================================================================================================
@@ -1080,32 +1089,35 @@ while 1:
                         continue
                     continue
                 # flood control not activated
-                elif flood_check is True and flood_cont is False and duckhunt is True and func.cnfexists('duckhunt.cnf', 'flood_protection', str(data[3].decode()).replace(':', '')) is True:
-                    woid = str(data[3].decode()).replace(':', '')
-                    if woid.lower() == '\x01version\x01' or woid.lower() == '\x01finger\x01' or woid.lower() == '\x01ping':
-                        flood = int(flood) + 4
-                    elif woid.lower() == '!shop' and len(data) == 4:
-                        flood = int(flood) + 4
-                    elif woid.lower() == '!duckstats':
-                        flood = int(flood) + 4
-                    flood = int(flood) + 1
-                    f_time = time.time() - float(flood_time)
-                    cmds = func.gettok(func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck'), 0, ',')
-                    secs = func.gettok(func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck'), 1, ',')
-                    print('FLOOD COUNT: ' + str(flood) + ' FLOOD TIME: ' + str(round(f_time)))
-                    if float(f_time) > float(secs) and int(flood) < int(cmds):
-                        flood_time = time.time()
-                        flood = 0
-                    if int(flood) > int(cmds):
+                elif flood_check is True and flood_cont is False and duckhunt is True:
+                    if utfix(data[3]) is False:
+                        continue
+                    if func.cnfexists('duckhunt.cnf', 'flood_protection', str(data[3].decode()).replace(':', '')) is True:
+                        woid = str(data[3].decode()).replace(':', '')
+                        if woid.lower() == '\x01version\x01' or woid.lower() == '\x01finger\x01' or woid.lower() == '\x01ping':
+                            flood = int(flood) + 4
+                        elif woid.lower() == '!shop' and len(data) == 4:
+                            flood = int(flood) + 4
+                        elif woid.lower() == '!duckstats':
+                            flood = int(flood) + 4
+                        flood = int(flood) + 1
                         f_time = time.time() - float(flood_time)
-                        if float(f_time) <= float(secs):
-                            flood_cont = True
-                            flood_timer = time.time()
-                            irc.send(b'PRIVMSG ' + duckchan + b' :\x034* Flood Control Activated *\x03\r\n')
-                            continue
-                        if float(f_time) > float(secs):
+                        cmds = func.gettok(func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck'), 0, ',')
+                        secs = func.gettok(func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck'), 1, ',')
+                        print('FLOOD COUNT: ' + str(flood) + ' FLOOD TIME: ' + str(round(f_time)))
+                        if float(f_time) > float(secs) and int(flood) < int(cmds):
                             flood_time = time.time()
                             flood = 0
+                        if int(flood) > int(cmds):
+                            f_time = time.time() - float(flood_time)
+                            if float(f_time) <= float(secs):
+                                flood_cont = True
+                                flood_timer = time.time()
+                                irc.send(b'PRIVMSG ' + duckchan + b' :\x034* Flood Control Activated *\x03\r\n')
+                                continue
+                            if float(f_time) > float(secs):
+                                flood_time = time.time()
+                                flood = 0
 
 # ======================================================================================================================
 # CTCP VERSION, PING, FINGER
