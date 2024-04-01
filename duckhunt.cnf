@@ -17,6 +17,7 @@ friendrate = 71
 floodcheck = 24,25
 maint = 24
 maint_time = 0
+serverssl = off
 
 [rules]
 gunricochet = 5
