@@ -1,5 +1,5 @@
 --------------------------------------------------------
-Super DuckHunt IRC Bot v1.1.3 BETA
+Super DuckHunt IRC Bot v1.1.3-2 BETA
 By Neo_Nemesis
 --------------------------------------------------------
 Requires Python 3.12.0
@@ -18,3 +18,4 @@ https://neo-coder-usa.github.io/super-duckhunt-web/
 
 All help information HTML files can be viewed/downloaded in the Super DuckHunt Web GitHub Repository <br>
 https://github.com/Neo-Coder-usa/super-duckhunt-web
+--------------------------------------------------------------------------------------------------------------------------
