@@ -1,10 +1,12 @@
 #! /usr/bin/python3
+# Mode60
 # ABOUT INFO# ==========================================================================================================
-# Title..........: Super DuckHunt v1.1.3 Python IRC Bot (BETA)
+# Title..........: Super DuckHunt v1.1.3-2 Python IRC Bot (BETA)
 # File...........: main.py
 # Python version.: v3.12.0 (does not work in older versions)
-# Script version.: v1.1.3 BETA
-# Remarks........: Added relay bot capability and more fixes and adjustments from v1.1.2
+# Script version.: v1.1.3-2 BETA
+# Remarks........: 1.1.3-2: Addition of a optional SSL connection. See operators manual for SSL configuration!
+#                  1.1.3: Added relay bot capability and more fixes and adjustments from v1.1.2
 # Language.......: English
 # Description....: IRC Bot Script based off original DuckHunt bot by Menz Agitat
 #                  Lots of changes and twists added to this, following suit as Menz Agitat bot was said to be a "port"
@@ -31,6 +33,7 @@
 from configparser import RawConfigParser
 from datetime import date
 import threading
+import ssl
 import socket
 import time
 import random
@@ -43,7 +46,10 @@ import bot
 # You MUST first manually put the info into duckhunt.cnf under section [duckhunt] before running the bot
 # ======================================================================================================================
 server = func.cnfread('duckhunt.cnf', 'duckhunt', 'server').lower()
-port = int(func.cnfread('duckhunt.cnf', 'duckhunt', 'port'))  # use only port 6667
+port = int(func.cnfread('duckhunt.cnf', 'duckhunt', 'port'))  # use only port 6667 or 6697 for SSL
+if func.cnfexists('duckhunt.cnf', 'duckhunt', 'serverssl') is False:
+    func.cnfwrite('duckhunt.cnf', 'duckhunt', 'serverssl', 'off')
+serverssl = func.cnfread('duckhunt.cnf', 'duckhunt', 'serverssl')
 duckchan = func.cnfread('duckhunt.cnf', 'duckhunt', 'duckchan').encode()
 duckchan = duckchan.lower()
 botname = func.cnfread('duckhunt.cnf', 'duckhunt', 'botname').encode()
@@ -75,7 +81,7 @@ bef = func.cnfread('duckhunt.cnf', 'rules', 'bef')
 flood_check = False
 if func.cnfread('duckhunt.cnf', 'duckhunt', 'floodcheck') != '0':
     flood_check = True
-# ADD-ON FOR RELAY BOTS (INCOMPLETE/DISABLED) v1.1.3 ===================================================================
+# ADD-ON FOR RELAY BOTS (WORKING SORT OF) v1.1.3 ===================================================================
 if func.cnfexists('duckhunt.cnf', 'duckhunt', 'relays') is False:
     func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', '0')
 relaybot = func.cnfread('duckhunt.cnf', 'duckhunt', 'relays').lower()
@@ -84,6 +90,7 @@ botversion = b'1.1.3'  # Current Bot Version hard code DO NOT CHANGE
 # =========================================================
 duckhunt = True  # Main duckhunt control
 # =========================================================
+irc = ''
 userlist = {}  # For channel user monitoring
 userchan = 0  # For channel user monitoring
 duckexists = False  # does a duck exist? always leave this as false
@@ -100,6 +107,7 @@ duck = {}  # Duck spawn array
 duckid = ''  # duck id for !bang/!bef
 start_time = ''  # start_time for duck timer
 elapsed_time = ''  # for duck timer
+keep_alive = ''  # For SSL stuff, v1.1.3-2
 daily = func.cnfread('duckhunt.cnf', 'top_shot', 'daily')  # daily shots
 weekly = func.cnfread('duckhunt.cnf', 'top_shot', 'weekly')  # weekly shots
 monthly = func.cnfread('duckhunt.cnf', 'top_shot', 'monthly')  # monthly shots
@@ -255,7 +263,7 @@ def duckstats(user, ruser, ext=''):
 # noinspection PyUnboundLocalVariable
 def duck_timer():
     global exitvar
-    if not exitvar:
+    if exitvar != 'Disconnect' and exitvar != 'Disconnect2':
 
         # global declarations
         global duckexists
@@ -267,6 +275,9 @@ def duck_timer():
         global elapsed_time
         global duck
         duck = {}
+        # v1.1.3-2 for SSL Eof handling
+        global keep_alive
+        keep_alive = time.time()
         # assigns duck variables based off maxducks (duck timers)
         for dks in range(maxducks + 1):
             if dks == 0:
@@ -283,11 +294,16 @@ def duck_timer():
         # this kills the timer on script exit or disconnect ====================================================================
         if exitvar is True or exitvar == 'Disconnect':
             break
+        # added 'Disconnect2' for SSL stuff v1.1.32
+        if exitvar == 'Disconnect2':
+            break
 
         # duck spawn/flee timer handling =======================================================================================
         if not duckhunt:
             continue
         time.sleep(10)  # fastest this way ¯\_(o.O)_/¯
+        if serverssl == 'on':  # v 1.1.3-2 SSL stuff
+            keepalive()
         elapsed_time = time.time() - start_time
         # checks for duck openings and spawn/flee timers
         for jx in range(maxducks + 1):
@@ -320,8 +336,16 @@ def duck_timer():
                         break
             continue
 
-
 # ===> duck_timer
+
+# v.1.1.3-2 keep alive function (derived from pycore)
+def keepalive():
+    global keep_alive
+    time_result = round(time.time() - float(keep_alive))
+    if time_result >= 90:
+        print('SSL Keep Alive --> PING :PYDUCKQUACK')
+        irc.send(b'PING :PYDUCKQUACK\r\n')
+        keep_alive = time.time()
 
 # FUNCTION #============================================================================================================
 # Name...........: fleeduck
@@ -857,6 +881,7 @@ def top_shot():
     return
 # ===> top_shot
 
+# for UTF error fix v1.1.3
 def utfix(datatext):
     try:
         datatext.decode()
@@ -865,6 +890,41 @@ def utfix(datatext):
     except UnicodeError:
         # print('UTFIX: False')
         return False
+
+# for SSL error handling (EOF errors??) band-aid pt 1.
+# Forces bot to disconnect and reconnect. v.1.132
+def ssl_err(args):
+    global exitvar
+    # irc.send(b'QUIT :Restarting...\r\n')
+    exitvar = 'Disconnect2'
+    # irc.close()
+    # irc.send(b'QUIT :SSL connection error has forced the bot to restart...\r\n')
+    print(f'*** SSL Error: {args.exc_value}')
+    print(f'*** RESTARTING....')
+
+    return
+
+# for SSL error handling (EOF errors??) band-aid pt 2. (Crash prevent?)
+# After ssl_err(args) is complete, this begins the reconnection process.
+def err_reconnect():
+    global irc
+    global exitvar
+    exitvar = 'Connect'
+    irc.close()
+    time.sleep(3)
+    irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    irc.connect((server, port))
+    if serverssl == 'on':
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        context.verify_opt = ssl.OP_NO_TLSv1_3
+        irc = context.wrap_socket(irc, server_hostname=server)
+    irc.send(b"USER " + botname + b" " + botname + b" " + botname + b" :Super DuckHunt Python Version by Neo_Nemesis\r\n")
+    irc.send(b"NICK " + botname + b"\r\n")
+    if str(botpass) != '0':
+        irc.send(b'PASS ' + bytes(str(botpass), 'utf-8') + b'\r\n')
+
 
 # ======================================================================================================================
 # MAIN LOOP STUFF
@@ -875,6 +935,11 @@ def utfix(datatext):
 # ======================================================================================================================
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 irc.connect((server, port))
+if serverssl == 'on':
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    irc = context.wrap_socket(irc, server_hostname=server)
 irc.send(b"USER " + botname + b" " + botname + b" " + botname + b" :Super DuckHunt Python Version by Neo_Nemesis\r\n")
 irc.send(b"NICK " + botname + b"\r\n")
 if str(botpass) != '0':
@@ -883,12 +948,22 @@ if str(botpass) != '0':
 # main loop - start
 # ======================================================================================================================
 while 1:
-    # if bot gets disocnnect, will attempt to reconnect. Kinda buggy
-    if exitvar == 'Disconnect':
+    # if bot gets disocnnect, will attempt to reconnect.
+    # Added 'Disconnect2' for adding SSL v1.1.32
+    if exitvar == 'Disconnect' or exitvar == 'Disconnect2':
+        if exitvar == 'Disconnect2':
+            err_reconnect()
+            continue
         time.sleep(5)
         exitvar = 'Connect'
         irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         irc.connect((server, port))
+        if serverssl == 'on':
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            context.verify_opt = ssl.OP_NO_TLSv1_3
+            irc = context.wrap_socket(irc, server_hostname=server)
         irc.send(b"USER " + botname + b" " + botname + b" " + botname + b" :Super DuckHunt Python Version by Neo_Nemesis\r\n")
         irc.send(b"NICK " + botname + b"\r\n")
         if botpass != '0':
@@ -921,12 +996,16 @@ while 1:
         data = txt[x].split(b" ")
         # Server ping
         if data[0] == b'PING':
+            keep_alive = time.time()
             irc.send(b"PONG " + data[1] + b'\r\n')
+            continue
+        if data[1] == b'PONG':
+            print('SSL Keep Alive - Ping/Pong LAG: ' + str(round(time.time() - keep_alive, 2)) + ' seconds')
             continue
         # Excess flood reconnect v 1.1.2
         if data[0].lower() == b'error':
             if data[1].lower() == b':closing' and data[2].lower() == b'link:':
-                if flood_cont == True:
+                if flood_cont is True:
                     flood_cont = False
                 exitvar = 'Disconnect'
                 time.sleep(3)
@@ -944,6 +1023,7 @@ while 1:
                     irc.send(b'PRIVMSG ' + b'NickServ :IDENTIFY ' + bytes(str(botpass), 'utf-8') + b'\r\n')
                 irc.send(b"JOIN " + duckchan + b"\r\n")
                 # Start DuckHunt Timer (for ducks only)
+                threading.excepthook = ssl_err
                 timer_thread = threading.Thread(target=duck_timer)
                 timer_thread.start()
 # ======================================================================================================================
@@ -3047,6 +3127,8 @@ while 1:
                             if data3 != b'' and data4 == b'':
                                 irc.send(b'PRIVMSG ' + duckchan + b' :\x01ACTION returns ' + username + b"'s gun.\x01\r\n")
                                 continue
+                            irc.send(b'PRIVMSG ' + duckchan + b' :\x01ACTION returns ' + username + b"'s gun.\x01\r\n")
+                            continue
                         # !rearm <username> and !rearm all
                         if len(data) == 5 or data4 != b'':
                             if data[4] == b'all' or data4 == b'all':
