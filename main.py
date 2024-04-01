@@ -999,7 +999,7 @@ while 1:
             keep_alive = time.time()
             irc.send(b"PONG " + data[1] + b'\r\n')
             continue
-        if len(data) > 1 and if data[1] == b'PONG':
+        if len(data) > 1 and data[1] == b'PONG':
             print('SSL Keep Alive - Ping/Pong LAG: ' + str(round(time.time() - keep_alive, 2)) + ' seconds')
             continue
         # Excess flood reconnect v 1.1.2
