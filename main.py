@@ -86,7 +86,7 @@ if func.cnfexists('duckhunt.cnf', 'duckhunt', 'relays') is False:
     func.cnfwrite('duckhunt.cnf', 'duckhunt', 'relays', '0')
 relaybot = func.cnfread('duckhunt.cnf', 'duckhunt', 'relays').lower()
 # GLOBAL VARIABLES # ===================================================================================================
-botversion = b'1.1.3'  # Current Bot Version hard code DO NOT CHANGE
+botversion = b'1.1.3-2'  # Current Bot Version hard code DO NOT CHANGE
 # =========================================================
 duckhunt = True  # Main duckhunt control
 # =========================================================
