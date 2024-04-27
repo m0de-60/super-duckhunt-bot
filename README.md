@@ -8,7 +8,7 @@ SET-UP/INSTALL: https://m0de-60.github.io/super-duckhunt-web/duckhunt1-1-0-opera
 
 CONFIGURATION: https://m0de-60.github.io/super-duckhunt-web/duckhunt1-1-0-operators-guide.htm#configuration
 
-COMMANDS AND INFO: https://mode-60.github.io/super-duckhunt-web/super-duckhunt-help.htm
+COMMANDS AND INFO: https://m0de-60.github.io/super-duckhunt-web/super-duckhunt-help.htm
 
 --------------------------------------------------------------------------------------------------------------------------
 This program is a beta version, bugs or issues may be experienced. Please report all issues.
