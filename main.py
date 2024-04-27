@@ -4356,7 +4356,7 @@ while 1:
                     # !help
                     # ======================================================================================================================
                     if data[3].lower() == b':!help' or data[3].lower() == b':!about' or data[3].lower() == b':!commands' or data3.lower() == b'!help':
-                        irc.send(b'PRIVMSG ' + duckchan + b' :For DuckHunt HELP: https://neo-coder-usa.github.io/super-duckhunt-web/super-duckhunt-help.htm\r\n')
+                        irc.send(b'PRIVMSG ' + duckchan + b' :For DuckHunt HELP: https://m0de-60.github.io/super-duckhunt-web/super-duckhunt-help.htm\r\n')
                         continue
                     # ======================================================================================================================
                     # !spawnduck <normal/golden> - Botmaster and Admin only
