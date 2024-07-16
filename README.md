@@ -1,21 +1,22 @@
+<img src="https://github.com/m0de-60/super-duckhunt-web/blob/main/super-duckhunt-img.png?raw=true">
+
 --------------------------------------------------------
-Super DuckHunt IRC Bot v1.1.3-2 BETA
-By Neo_Nemesis
+Super DuckHunt IRC Bot v1.1.4 Final
+
+By Mode60/Neo_Nemesis
 --------------------------------------------------------
 Requires Python 3.12.0
 
-SET-UP/INSTALL: https://m0de-60.github.io/super-duckhunt-web/duckhunt1-1-0-operators-guide.htm#setting-up-the-bot
+<a href="https://m0de-60.github.io/super-duckhunt-web/duckhunt1-1-0-operators-guide.htm#setting-up-the-bot">Click here for SET-UP/INSTALL</a>
 
-CONFIGURATION: https://m0de-60.github.io/super-duckhunt-web/duckhunt1-1-0-operators-guide.htm#configuration
+<a href="https://m0de-60.github.io/super-duckhunt-web/duckhunt1-1-0-operators-guide.htm#configuration">Click here for CONFIGURATION</a>
 
-COMMANDS AND INFO: https://m0de-60.github.io/super-duckhunt-web/super-duckhunt-help.htm
+<a href="https://m0de-60.github.io/super-duckhunt-web/super-duckhunt-help.htm">Click here for COMMANDS AND INFO</a>
 
 --------------------------------------------------------------------------------------------------------------------------
-This program is a beta version, bugs or issues may be experienced. Please report all issues.
+This program is mostly stable and is complete for its version.
 
-All information can be found on the Super DuckHunt Web Repository <br>
-https://m0de-60.github.io/super-duckhunt-web/
+All information can be found on the <a href="https://m0de-60.github.io/super-duckhunt-web/">Super DuckHunt Web Repository Homepage</a> <br>
 
-All help information HTML files can be viewed/downloaded in the Super DuckHunt Web GitHub Repository <br>
-https://github.com/m0de-60/super-duckhunt-web
+All HTML files can be viewed/downloaded in the <a href="https://github.com/m0de-60/super-duckhunt-web">Super DuckHunt Web GitHub Repository</a> <br>
 --------------------------------------------------------------------------------------------------------------------------
