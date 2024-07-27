@@ -3369,8 +3369,13 @@ while 1:
                             irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b" > \x034Your clothes are all soggy. You cannot hunt ducks until you're dry. \x033[Time Remaining: " + bytes(str(timemath), 'utf-8') + b']\x03\r\n')
                             continue
 
-                        # player is sabotaged
-                        if bot.cnfexists('duckhunt.cnf', 'sabotage', str(username).lower()) and bot.cnfexists('duckhunt.cnf', 'trigger_lock', str(username).lower()) is False:
+                        # player is sabotaged v 1.1.4 fixed sabotage bug (modified this statement and made an additional statement below)
+                        if bot.cnfexists('duckhunt.cnf', 'sabotage', str(username).lower()) is True and bot.cnfexists('duckhunt.cnf', 'trigger_lock', str(username).lower()) is False and duck_exists() is False:
+                            bot.cnfdelete('duckhunt.cnf', 'sabotage', str(username).lower())
+                            irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK PFFFFT*\x03     \x034Your gun was sabotaged.\x03\r\n')
+                            continue
+                        # v 1.1.4 fix
+                        if bot.cnfexists('duckhunt.cnf', 'sabotage', str(username).lower()) is True and duck_exists() is True:
                             bot.cnfdelete('duckhunt.cnf', 'sabotage', str(username).lower())
                             irc.send(b'PRIVMSG ' + duckchan + b' :' + username + b' > \x0314*CLICK PFFFFT*\x03     \x034Your gun was sabotaged.\x03\r\n')
                             continue
