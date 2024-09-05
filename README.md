@@ -1,7 +1,9 @@
 <img src="https://github.com/m0de-60/super-duckhunt-web/blob/main/super-duckhunt-img.png?raw=true">
 
 --------------------------------------------------------
-Super DuckHunt IRC Bot v1.1.4 Final
+Super DuckHunt IRC Bot v1.1.4 Final 
+
+See: <a href="https://github.com/m0de-60/super-duckhunt">Super DuckHunt 2.0 plugin for zCore</a>
 
 By Mode60/Neo_Nemesis
 --------------------------------------------------------
