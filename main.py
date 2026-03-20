@@ -281,7 +281,7 @@ def duck_timer():
         # duck spawn/flee timer handling =======================================================================================
         if not duckhunt:
             continue
-        time.sleep(10)  # fastest this way ¯\_(o.O)_/¯
+        time.sleep(10)  # fastest this way Â¯\_(o.O)_/Â¯
         if serverssl == 'on':  # v 1.1.3-2 SSL stuff
             keepalive()
         elapsed_time = time.time() - start_time
@@ -2075,7 +2075,7 @@ while 1:
 # !duckhunt <on/off> (Botmaster and Admin only)
 # ======================================================================================================================
                         if data[3].lower() == b':!duckhunt' or data3.lower() == b'!duckhunt':
-                            if len(data) != 5 or data4 == b'':
+                            if len(data) != 5:
                                 continue
                             if bot.istok(botmaster, dusername, ',') is False and bot.istok(adminlist, dusername, ',') is False:
                                 continue
