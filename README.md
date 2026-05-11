@@ -3,7 +3,7 @@
 --------------------------------------------------------
 Super DuckHunt IRC Bot v1.1.4 Final 
 
-This project has moved to: <a href="https://github.com/m0de-60/super-duckhunt">Super DuckHunt v1.9.9+ plugin for zCore</a>
+Version continuations for this project have moved to: <a href="https://github.com/m0de-60/super-duckhunt">Super DuckHunt v1.9.9+ plugin for zCore</a>
 
 By Mode60/Neo_Nemesis
 --------------------------------------------------------
